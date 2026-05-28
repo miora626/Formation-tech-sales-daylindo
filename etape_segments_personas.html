@@ -169,6 +169,16 @@
     }
     #verify-all-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
+    /* Send email btn */
+    #send-email-btn {
+      width: 100%; padding: 16px; border-radius: 14px; border: 2px solid var(--navy);
+      background: var(--navy); color: #fff; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px; font-weight: 800; cursor: pointer; margin-top: 12px;
+      transition: transform .15s, filter .15s; letter-spacing: .03em;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    #send-email-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+
     /* Score */
     #exo-score { display: none; background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); border-radius: 14px; padding: 28px; color: #fff; position: relative; overflow: hidden; }
     #exo-score.show { display: block; }
@@ -469,10 +479,10 @@
     <div class="case-card" style="margin-bottom:16px;animation-delay:.05s;">
       <div class="case-header">
         <div class="case-num">1</div>
-        <p style="font-size:15px;font-weight:500;padding-top:4px;">Contexte de l'appel entrant</p>
+        <p style="font-size:15px;font-weight:500;padding-top:4px;">Contexte de l'appel sortant</p>
       </div>
       <div class="case-body">
-        <div class="case-scenario">📞 La personne te dit : <strong>«&nbsp;On a 400 intérimaires qui tournent chaque mois. Le coût de leur intégration est une vraie charge — et je sais qu'on ne récupère pas tout ce qu'on pourrait auprès des OPCO.&nbsp;»</strong></div>
+        <div class="case-scenario">📞 Tu appelles le DRH d'une entreprise d'intérim. Il te dit : <strong>«📞 La personne te dit : <strong>«&nbsp;On a 400 intérimairesnbsp;On a 400 intérimaires qui tournent chaque mois. Le coût de leur intégration est une vraie charge — et je sais qu'on ne récupère pas tout ce qu'on pourrait auprès des OPCO.&nbsp;»</strong></div>
         <div class="sel-row">
           <div class="sel-label">Quel segment ?</div>
           <div class="sel-opts">
@@ -502,7 +512,7 @@
     <div class="case-card" style="margin-bottom:16px;animation-delay:.10s;">
       <div class="case-header">
         <div class="case-num">2</div>
-        <p style="font-size:15px;font-weight:500;padding-top:4px;">Contexte de l'appel entrant</p>
+        <p style="font-size:15px;font-weight:500;padding-top:4px;">Contexte de l'appel sortant</p>
       </div>
       <div class="case-body">
         <div class="case-scenario">📞 Tu appelles un Directeur de production dans une usine. Il te dit : <strong>«&nbsp;On a des opérateurs confirmés qui partent à la retraite dans les 2 prochaines années. Leurs gestes, on ne sait pas comment les garder — c'est dans leur tête depuis 20 ans.&nbsp;»</strong></div>
@@ -535,7 +545,7 @@
     <div class="case-card" style="margin-bottom:16px;animation-delay:.15s;">
       <div class="case-header">
         <div class="case-num">3</div>
-        <p style="font-size:15px;font-weight:500;padding-top:4px;">Contexte de l'appel entrant</p>
+        <p style="font-size:15px;font-weight:500;padding-top:4px;">Contexte de l'appel sortant</p>
       </div>
       <div class="case-body">
         <div class="case-scenario">📞 Tu appelles une Directrice Formation d'un réseau bancaire de 60 agences. Elle te dit : <strong>«&nbsp;On a le même parcours d'intégration pour tous, mais je n'ai aucun moyen de savoir si chaque agence l'applique vraiment et si les collaborateurs ont vraiment acquis les compétences.&nbsp;»</strong></div>
@@ -634,6 +644,12 @@
     <button id="verify-all-btn" onclick="verifyAll()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Vérifier mes 5 cas
+    </button>
+
+    <!-- SEND EMAIL -->
+    <button id="send-email-btn" onclick="sendEmail()" style="margin-top:12px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+      Envoyer mes réponses à Miora
     </button>
 
     <!-- SCORE -->
@@ -785,6 +801,41 @@
     ];
     document.getElementById('sc-desc').textContent = descs[Math.min(score, 5)];
     sp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function sendEmail() {
+    const DEST = 'miora@daylino.com';
+    const SUBJECT = encodeURIComponent('[Formation BDR] Exercice Segments & Personas — ' + new Date().toLocaleDateString('fr-FR'));
+
+    const segLabels = { S1:'S1 — Optimisateurs financeurs', S2:'S2 — Gestes métiers', S3:'S3 — Réseaux multi-sites' };
+    const perLabels = { RH:'RH / DRH', OPS:'Opérationnel', LD:'Resp. Formation / L&D' };
+    const caseNames = {
+      c1: 'Cas 1 — Intérimaires / OPCO non valorisé',
+      c2: 'Cas 2 — Gestes seniors / Départs retraite',
+      c3: 'Cas 3 — Réseau bancaire / Visibilité multi-sites',
+      c4: 'Cas 4 — PIVOT logistique DRH → Opérationnel',
+      c5: 'Cas 5 — Conformité / Habilitations énergie'
+    };
+
+    let body = 'Bonjour Miora,\n\nVoici mes réponses à l\'exercice Segments & Personas.\n\n';
+    body += '══════════════════════════════════════\n';
+    body += '  EXERCICE — 5 CAS COLD CALL\n';
+    body += '══════════════════════════════════════\n\n';
+
+    ['c1','c2','c3','c4','c5'].forEach(c => {
+      const s = selected[c] || {};
+      body += '──────────────────────────────────────\n';
+      body += caseNames[c] + '\n';
+      body += 'Segment   : ' + (s.seg ? segLabels[s.seg] : '(non répondu)') + '\n';
+      body += 'Persona   : ' + (s.per ? perLabels[s.per] : '(non répondu)') + '\n';
+      const txt = document.getElementById('txt-' + c).value.trim();
+      body += 'Accroche  : ' + (txt || '(non rempli)') + '\n\n';
+    });
+
+    body += '══════════════════════════════════════\n';
+    body += 'Envoyé depuis : Formation BDR Daylindo — Étape Segments & Personas\n';
+
+    const mailto = 'mailto:' + DEST + '?subject=' + SUBJECT + '&body=' + encodeURIComponent(body);
+    window.location.href = mailto;
   }
 </script>
 </body>
