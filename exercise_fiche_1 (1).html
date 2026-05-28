@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fiche 1 — Comprendre la mission de Daylindo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Karla:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0d1f3c;
+      --navy2:   #162d54;
+      --orange:  #f06423;
+      --orange2: #ff813f;
+      --cream:   #faf7f2;
+      --muted:   #8a95a8;
+      --border:  #d8dde7;
+      --correct: #1a9e6f;
+      --wrong:   #d94040;
+      --shadow:  0 4px 28px rgba(13,31,60,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Karla', sans-serif;
+      background: var(--cream);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ── HERO HEADER ── */
+    .hero {
+      background: var(--navy);
+      color: #fff;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 120% at 110% -10%, rgba(240,100,35,.35) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 80% at -10% 110%, rgba(22,45,84,.8) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 52px 32px 44px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(240,100,35,.18);
+      border: 1px solid rgba(240,100,35,.4);
+      color: var(--orange2);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange2); }
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(32px, 6vw, 54px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -.01em;
+    }
+    .hero h1 span { color: var(--orange2); }
+    .hero-sub {
+      font-size: 15px;
+      color: rgba(255,255,255,.65);
+      font-weight: 400;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .meta-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,.55);
+    }
+    .meta-pill svg { opacity: .7; }
+
+    /* ── INSTRUCTIONS BAR ── */
+    .instructions {
+      max-width: 860px;
+      margin: 28px auto 0;
+      padding: 0 32px;
+    }
+    .instr-box {
+      background: #fff;
+      border-left: 4px solid var(--orange);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--navy);
+      line-height: 1.65;
+      box-shadow: var(--shadow);
+    }
+    .instr-box strong { color: var(--orange); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      max-width: 860px;
+      margin: 20px auto 0;
+      padding: 0 32px;
+    }
+    .progress-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange), var(--orange2));
+      border-radius: 99px;
+      width: 0%;
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── MAIN CONTENT ── */
+    main {
+      max-width: 860px;
+      margin: 28px auto 60px;
+      padding: 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── QUESTION CARD ── */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: box-shadow .25s;
+    }
+    .card:focus-within {
+      box-shadow: 0 6px 36px rgba(240,100,35,.14), 0 0 0 2px rgba(240,100,35,.25);
+    }
+    .card-header {
+      padding: 22px 26px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .q-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: #fff;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+    .q-num.open-q { background: var(--orange); }
+    .q-text {
+      font-size: 15.5px;
+      font-weight: 500;
+      line-height: 1.55;
+      padding-top: 4px;
+    }
+    .q-text em {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .card-body { padding: 20px 26px 24px; }
+
+    /* ── RADIO OPTIONS ── */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: border-color .2s, background .2s, transform .15s;
+      user-select: none;
+    }
+    .opt-label:hover { border-color: #b0bac9; background: #f7f9fc; transform: translateX(3px); }
+    .opt-label input[type="radio"] { display: none; }
+    .opt-marker {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--cream);
+      display: grid;
+      place-items: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--muted);
+      transition: all .2s;
+    }
+    .opt-text {
+      font-size: 14.5px;
+      line-height: 1.55;
+      padding-top: 3px;
+      color: #3a4a62;
+    }
+    /* selected state */
+    .opt-label.selected {
+      border-color: var(--orange);
+      background: rgba(240,100,35,.05);
+    }
+    .opt-label.selected .opt-marker {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+    /* feedback states */
+    .opt-label.correct-ans {
+      border-color: var(--correct);
+      background: rgba(26,158,111,.07);
+    }
+    .opt-label.correct-ans .opt-marker {
+      background: var(--correct);
+      border-color: var(--correct);
+      color: #fff;
+    }
+    .opt-label.wrong-ans {
+      border-color: var(--wrong);
+      background: rgba(217,64,64,.06);
+    }
+    .opt-label.wrong-ans .opt-marker {
+      background: var(--wrong);
+      border-color: var(--wrong);
+      color: #fff;
+    }
+
+    .feedback-msg {
+      margin-top: 12px;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 8px;
+    }
+    .feedback-msg.show { display: flex; }
+    .feedback-msg.ok { background: rgba(26,158,111,.1); color: #136f4d; }
+    .feedback-msg.ko { background: rgba(217,64,64,.1); color: #a02828; }
+
+    /* ── OPEN QUESTION ── */
+    .open-hint {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .fill-blank {
+      display: inline-block;
+      background: rgba(240,100,35,.10);
+      border-bottom: 2px solid var(--orange);
+      border-radius: 3px 3px 0 0;
+      min-width: 80px;
+      padding: 0 6px;
+      font-style: normal;
+      font-weight: 500;
+      color: var(--navy);
+    }
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: 'Karla', sans-serif;
+      font-size: 15px;
+      color: var(--navy);
+      background: #fafbfc;
+      transition: border-color .2s, background .2s;
+      outline: none;
+      line-height: 1.6;
+    }
+    textarea:focus {
+      border-color: var(--orange);
+      background: #fff;
+    }
+    textarea::placeholder { color: #b8c0cf; font-style: italic; }
+    .char-counter {
+      text-align: right;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+    .char-counter.warn { color: var(--wrong); }
+
+    /* ── SUBMIT SECTION ── */
+    .submit-section {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 28px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .submit-section h3 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      cursor: pointer;
+      border: none;
+      transition: transform .15s, box-shadow .15s, filter .15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(240,100,35,.35);
+    }
+    .btn-primary:hover { filter: brightness(1.07); box-shadow: 0 6px 24px rgba(240,100,35,.45); }
+    .btn-secondary {
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(13,31,60,.2);
+    }
+    .btn-secondary:hover { filter: brightness(1.15); }
+    .btn-outline {
+      background: transparent;
+      color: var(--navy);
+      border: 2px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--navy); background: var(--cream); }
+
+    /* ── SCORE PANEL ── */
+    #score-panel {
+      display: none;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      color: #fff;
+      border-radius: 14px;
+      padding: 28px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+    #score-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(240,100,35,.25) 0%, transparent 60%);
+    }
+    #score-panel.show { display: block; }
+    .score-inner { position: relative; }
+    .score-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 8px;
+    }
+    .score-big {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 64px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--orange2);
+    }
+    .score-desc {
+      font-size: 16px;
+      color: rgba(255,255,255,.8);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px 32px;
+      font-size: 12.5px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer strong { color: var(--navy); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hero-inner { padding: 36px 20px 32px; }
+      .instructions, .progress-wrap, main { padding: 0 16px; }
+      .card-header, .card-body { padding: 18px 18px; }
+      .submit-section { padding: 22px 18px; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card { animation: fadeUp .4s ease both; }
+    .card:nth-child(1) { animation-delay: .05s; }
+    .card:nth-child(2) { animation-delay: .10s; }
+    .card:nth-child(3) { animation-delay: .15s; }
+    .card:nth-child(4) { animation-delay: .20s; }
+    .card:nth-child(5) { animation-delay: .25s; }
+    .card:nth-child(6) { animation-delay: .30s; }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge"><span class="badge-dot"></span>Formation BDR — Daylindo</span>
+    <h1>Fiche <span>1</span> — Comprendre<br>la mission de Daylindo</h1>
+    <p class="hero-sub">Exercices pratiques. Lis chaque question et remplis ta réponse. Envoie le fichier complété à Miora.</p>
+    <div class="hero-meta">
+      <span class="meta-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        ~10 minutes
+      </span>
+      <span class="meta-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        3 QCM · 3 Questions ouvertes
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- ── INSTRUCTIONS ── -->
+<div class="instructions">
+  <div class="instr-box">
+    <strong>Instructions :</strong> Pour les QCM, clique sur la bonne réponse. Pour les questions ouvertes, rédige au moins 2 phrases.
+    Une fois terminé, clique sur <strong>« Télécharger mes réponses »</strong> et envoie le fichier à Miora.
+  </div>
+</div>
+
+<!-- ── PROGRESS ── -->
+<div class="progress-wrap">
+  <div class="progress-label">Progression — <span id="prog-text">0 / 6</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<!-- ── QUESTIONS ── -->
+<main id="form-main">
+
+  <!-- Section QCM -->
+  <div class="section-label">Questions à choix multiple</div>
+
+  <!-- Q1 -->
+  <div class="card" id="card-q1">
+    <div class="card-header">
+      <div class="q-num">Q1</div>
+      <p class="q-text">Quel est le problème principal que rencontrent les entreprises ciblées par Daylindo&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q1">
+        <label class="opt-label" data-q="q1" data-val="A">
+          <input type="radio" name="q1" value="A" />
+          <span class="opt-marker">A</span>
+          <span class="opt-text">Elles n'arrivent pas à trouver de candidats pour leurs recrutements.</span>
+        </label>
+        <label class="opt-label" data-q="q1" data-val="B">
+          <input type="radio" name="q1" value="B" />
+          <span class="opt-marker">B</span>
+          <span class="opt-text">Les managers n'ont pas toujours le temps de bien former les nouveaux, ce qui entraîne des erreurs et une perte du savoir-faire.</span>
+        </label>
+        <label class="opt-label" data-q="q1" data-val="C">
+          <input type="radio" name="q1" value="C" />
+          <span class="opt-marker">C</span>
+          <span class="opt-text">Leurs employés ne veulent pas utiliser de nouveaux logiciels.</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q1"></div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card" id="card-q2">
+    <div class="card-header">
+      <div class="q-num">Q2</div>
+      <p class="q-text">Concrètement, comment Daylindo aide-t-il les entreprises&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q2">
+        <label class="opt-label" data-q="q2" data-val="A">
+          <input type="radio" name="q2" value="A" />
+          <span class="opt-marker">A</span>
+          <span class="opt-text">En proposant des formations théoriques dans des salles de classe classiques.</span>
+        </label>
+        <label class="opt-label" data-q="q2" data-val="B">
+          <input type="radio" name="q2" value="B" />
+          <span class="opt-marker">B</span>
+          <span class="opt-text">En remplaçant les managers par des formateurs externes.</span>
+        </label>
+        <label class="opt-label" data-q="q2" data-val="C">
+          <input type="radio" name="q2" value="C" />
+          <span class="opt-marker">C</span>
+          <span class="opt-text">En structurant la transmission des compétences opérationnelles directement au poste de travail.</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q2"></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card" id="card-q3">
+    <div class="card-header">
+      <div class="q-num">Q3</div>
+      <p class="q-text">Daylindo est-il uniquement un logiciel de formation&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q3">
+        <label class="opt-label" data-q="q3" data-val="A">
+          <input type="radio" name="q3" value="A" />
+          <span class="opt-marker">A</span>
+          <span class="opt-text">Oui, c'est un outil informatique à télécharger.</span>
+        </label>
+        <label class="opt-label" data-q="q3" data-val="B">
+          <input type="radio" name="q3" value="B" />
+          <span class="opt-marker">B</span>
+          <span class="opt-text">Non, Daylindo est une démarche complète soutenue par une plateforme — pas juste un outil.</span>
+        </label>
+        <label class="opt-label" data-q="q3" data-val="C">
+          <input type="radio" name="q3" value="C" />
+          <span class="opt-marker">C</span>
+          <span class="opt-text">Non, Daylindo est uniquement une agence de recrutement.</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q3"></div>
+    </div>
+  </div>
+
+  <!-- Section Questions ouvertes -->
+  <div class="section-label" style="margin-top:8px;">Questions ouvertes</div>
+
+  <!-- Q4 -->
+  <div class="card" id="card-q4">
+    <div class="card-header">
+      <div class="q-num open-q">Q4</div>
+      <div>
+        <p class="q-text"><strong>Test de l'ami curieux</strong> — Complète cette phrase de façon fluide et naturelle&nbsp;:</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="open-hint">
+        «&nbsp;Daylindo aide les entreprises à <span class="fill-blank">______</span> pour <span class="fill-blank">______.&nbsp;</span>»<br>
+        Rédige ta version complète et naturelle ci-dessous (max 20 mots au total).
+      </p>
+      <textarea id="ans-q4" placeholder="Ex. : Daylindo aide les entreprises à structurer la formation terrain pour que les nouveaux soient opérationnels plus vite..." maxlength="300" oninput="updateChar('q4',300); updateProgress();"></textarea>
+      <div class="char-counter" id="cc-q4">0 / 300</div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="card" id="card-q5">
+    <div class="card-header">
+      <div class="q-num open-q">Q5</div>
+      <div>
+        <p class="q-text"><strong>Le recadrage du prospect</strong> — Il te dit&nbsp;: <em>«&nbsp;Vous vendez juste une nouvelle application pour faire de la formation sur ordinateur.&nbsp;»</em><br>→ Comment le corriges-tu en une phrase&nbsp;?</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="open-hint">Rédige au moins 2 phrases. Sois direct·e et convaincant·e.</p>
+      <textarea id="ans-q5" placeholder="Ex. : Ce n'est pas une simple application — c'est une méthode pour structurer la transmission des savoir-faire directement sur le terrain, avec ou sans outil digital..." maxlength="400" oninput="updateChar('q5',400); updateProgress();"></textarea>
+      <div class="char-counter" id="cc-q5">0 / 400</div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="card" id="card-q6">
+    <div class="card-header">
+      <div class="q-num open-q">Q6</div>
+      <div>
+        <p class="q-text"><strong>Mise en situation</strong> — Un Responsable RH te dit&nbsp;: <em>«&nbsp;Dites-moi juste en une phrase ce que fait votre société.&nbsp;»</em><br>→ Rédige une seule phrase, max 20 mots, orientée résultat, sans jargon.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="open-hint">Pense à l'interlocuteur : résultat concret, langage simple, pas de termes techniques.</p>
+      <textarea id="ans-q6" placeholder="Ex. : Nous aidons les équipes terrain à former les nouveaux efficacement, sans surcharger les managers." maxlength="300" rows="3" oninput="updateChar('q6',300); updateProgress();"></textarea>
+      <div class="char-counter" id="cc-q6">0 / 300</div>
+    </div>
+  </div>
+
+  <!-- ── SCORE & SUBMIT ── -->
+  <div id="score-panel">
+    <div class="score-inner">
+      <div class="score-title">Score QCM</div>
+      <div class="score-big" id="score-val">—</div>
+      <div class="score-desc" id="score-desc"></div>
+    </div>
+  </div>
+
+  <div class="submit-section">
+    <h3>Prêt·e à envoyer tes réponses&nbsp;?</h3>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;">Vérifie d'abord tes réponses QCM avec le bouton ci-dessous. Ensuite télécharge le fichier et envoie-le à Miora.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkQCM()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Vérifier mes QCM
+      </button>
+      <button class="btn btn-secondary" onclick="downloadAnswers()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger mes réponses
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimer
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Daylindo</strong> — Formation BDR &nbsp;·&nbsp; Fiche 1 — Comprendre la mission &nbsp;·&nbsp; Exercice interne
+</footer>
+
+<script>
+  // ── Correct answers ──
+  const CORRECT = { q1: 'B', q2: 'C', q3: 'B' };
+  const FEEDBACK = {
+    q1: {
+      ok: '✓ Bonne réponse ! Le vrai problème est le manque de temps des managers pour former correctement, entraînant perte de savoir-faire.',
+      ko: '✗ Mauvaise réponse. Le problème central n'est pas le recrutement ni les logiciels, mais la transmission des compétences.'
+    },
+    q2: {
+      ok: '✓ Exact ! Daylindo structure la transmission des compétences directement au poste de travail.',
+      ko: '✗ Pas tout à fait. Daylindo n'est pas une formation classique en salle ni un remplacement des managers.'
+    },
+    q3: {
+      ok: '✓ Bien ! Daylindo est une démarche complète (méthode + plateforme), pas un simple logiciel.',
+      ko: '✗ Incorrect. Daylindo va bien au-delà d'un outil : c'est une démarche structurée de transmission des compétences.'
+    }
+  };
+
+  let answered = { q1: false, q2: false, q3: false };
+
+  // ── Radio click handling ──
+  document.querySelectorAll('.opt-label').forEach(label => {
+    label.addEventListener('click', function() {
+      const q = this.dataset.q;
+      const val = this.dataset.val;
+      // set radio
+      this.querySelector('input').checked = true;
+      // update visual
+      document.querySelectorAll(`.opt-label[data-q="${q}"]`).forEach(l => l.classList.remove('selected'));
+      this.classList.add('selected');
+      answered[q] = val;
+      updateProgress();
+    });
+  });
+
+  // ── Check QCM ──
+  function checkQCM() {
+    let score = 0;
+    ['q1','q2','q3'].forEach(q => {
+      const chosen = answered[q];
+      const fb = document.getElementById('fb-' + q);
+      const opts = document.querySelectorAll(`.opt-label[data-q="${q}"]`);
+
+      opts.forEach(l => l.classList.remove('correct-ans','wrong-ans'));
+
+      if (!chosen) {
+        fb.className = 'feedback-msg show ko';
+        fb.textContent = '⚠ Tu n'as pas encore sélectionné de réponse.';
+        return;
+      }
+
+      // show correct answer
+      opts.forEach(l => {
+        if (l.dataset.val === CORRECT[q]) l.classList.add('correct-ans');
+        else if (l.dataset.val === chosen && chosen !== CORRECT[q]) l.classList.add('wrong-ans');
+      });
+
+      if (chosen === CORRECT[q]) {
+        score++;
+        fb.className = 'feedback-msg show ok';
+        fb.textContent = FEEDBACK[q].ok;
+      } else {
+        fb.className = 'feedback-msg show ko';
+        fb.textContent = FEEDBACK[q].ko;
+      }
+    });
+
+    // score panel
+    const sp = document.getElementById('score-panel');
+    sp.classList.add('show');
+    document.getElementById('score-val').textContent = score + ' / 3';
+    const descs = [
+      'Continue à réviser la mission de Daylindo — relis la fiche et réessaie !',
+      'Pas mal ! Quelques points à revoir pour bien maîtriser le discours.',
+      'Bien joué ! Tu maîtrises l'essentiel de la mission Daylindo.',
+      'Parfait ! Tu es prêt·e à parler de Daylindo avec confiance. 🎉'
+    ];
+    document.getElementById('score-desc').textContent = descs[score];
+    sp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── Char counter ──
+  function updateChar(q, max) {
+    const ta = document.getElementById('ans-' + q);
+    const cc = document.getElementById('cc-' + q);
+    const len = ta.value.length;
+    cc.textContent = len + ' / ' + max;
+    cc.classList.toggle('warn', len > max * 0.9);
+  }
+
+  // ── Progress ──
+  function updateProgress() {
+    let done = 0;
+    if (answered.q1) done++;
+    if (answered.q2) done++;
+    if (answered.q3) done++;
+    if (document.getElementById('ans-q4').value.trim().length > 10) done++;
+    if (document.getElementById('ans-q5').value.trim().length > 10) done++;
+    if (document.getElementById('ans-q6').value.trim().length > 10) done++;
+    document.getElementById('prog-text').textContent = done + ' / 6';
+    document.getElementById('prog-fill').style.width = (done / 6 * 100) + '%';
+  }
+
+  // ── Download answers as .txt ──
+  function downloadAnswers() {
+    const ts = new Date().toLocaleString('fr-FR');
+    let txt = '═══════════════════════════════════════════════════\n';
+    txt += '  DAYLINDO — Formation BDR\n';
+    txt += '  FICHE 1 — Comprendre la mission de Daylindo\n';
+    txt += '  Exercices pratiques\n';
+    txt += '  Téléchargé le : ' + ts + '\n';
+    txt += '═══════════════════════════════════════════════════\n\n';
+
+    const qcmLabels = {
+      q1: 'Q1 — Problème principal des entreprises ciblées',
+      q2: 'Q2 — Comment Daylindo aide concrètement',
+      q3: 'Q3 — Daylindo est-il uniquement un logiciel ?'
+    };
+    ['q1','q2','q3'].forEach(q => {
+      txt += '───────────────────────────────────────────────────\n';
+      txt += qcmLabels[q] + '\n';
+      txt += 'Réponse : ' + (answered[q] || '(non répondu)') + '\n';
+      const isCorrect = answered[q] && answered[q] === CORRECT[q];
+      if (answered[q]) txt += 'Résultat : ' + (isCorrect ? '✓ Correct' : '✗ Incorrect — bonne réponse : ' + CORRECT[q]) + '\n';
+      txt += '\n';
+    });
+
+    const opens = [
+      { id: 'ans-q4', label: 'Q4 — Test de l\'ami curieux (compléter la phrase)' },
+      { id: 'ans-q5', label: 'Q5 — Recadrage du prospect' },
+      { id: 'ans-q6', label: 'Q6 — Phrase de présentation RH (max 20 mots)' }
+    ];
+    opens.forEach(o => {
+      txt += '───────────────────────────────────────────────────\n';
+      txt += o.label + '\n';
+      const val = document.getElementById(o.id).value.trim();
+      txt += 'Réponse : ' + (val || '(non rempli)') + '\n\n';
+    });
+
+    txt += '═══════════════════════════════════════════════════\n';
+    txt += 'Envoie ce fichier à Miora une fois complété.\n';
+
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Daylindo_Fiche1_reponses.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
