@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fiche 2 — Le problème que l'on résout | Daylindo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Karla:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0d1f3c;
+      --navy2:   #162d54;
+      --orange:  #f06423;
+      --orange2: #ff813f;
+      --cream:   #faf7f2;
+      --muted:   #8a95a8;
+      --border:  #d8dde7;
+      --correct: #1a9e6f;
+      --wrong:   #d94040;
+      --shadow:  0 4px 28px rgba(13,31,60,.10);
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Karla', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; }
+
+    /* ── HERO ── */
+    .hero { background: var(--navy); color: #fff; position: relative; overflow: hidden; }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 120% at 110% -10%, rgba(240,100,35,.35) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 80% at -10% 110%, rgba(22,45,84,.8) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative; max-width: 860px; margin: 0 auto;
+      padding: 52px 32px 44px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(240,100,35,.18); border: 1px solid rgba(240,100,35,.4);
+      color: var(--orange2); font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 4px; width: fit-content;
+    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange2); }
+    .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(30px,6vw,52px); font-weight: 800; line-height: 1.05; letter-spacing: -.01em; }
+    .hero h1 span { color: var(--orange2); }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,.65); max-width: 520px; line-height: 1.6; }
+    .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+    .meta-pill { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,.55); }
+
+    /* ── INSTRUCTIONS ── */
+    .instructions { max-width: 860px; margin: 28px auto 0; padding: 0 32px; }
+    .instr-box {
+      background: #fff; border-left: 4px solid var(--orange);
+      border-radius: 0 10px 10px 0; padding: 16px 20px;
+      font-size: 14px; color: var(--navy); line-height: 1.65; box-shadow: var(--shadow);
+    }
+    .instr-box strong { color: var(--orange); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { max-width: 860px; margin: 20px auto 0; padding: 0 32px; }
+    .progress-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--orange2)); border-radius: 99px; width: 0%; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+    /* ── MAIN ── */
+    main { max-width: 860px; margin: 28px auto 60px; padding: 0 32px; display: flex; flex-direction: column; gap: 24px; }
+
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── CARD ── */
+    .card { background: #fff; border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; transition: box-shadow .25s; animation: fadeUp .4s ease both; }
+    .card:focus-within { box-shadow: 0 6px 36px rgba(240,100,35,.14), 0 0 0 2px rgba(240,100,35,.25); }
+    .card-header { padding: 22px 26px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 16px; }
+    .q-num {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px;
+      background: var(--navy); color: #fff; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px; font-weight: 700; display: grid; place-items: center;
+    }
+    .q-num.open-q { background: var(--orange); }
+    .q-num.sit-q  { background: #5b4fcf; }
+    .q-text { font-size: 15.5px; font-weight: 500; line-height: 1.55; padding-top: 4px; }
+    .q-text em { font-style: italic; color: var(--muted); font-size: 14px; }
+    .card-body { padding: 20px 26px 24px; }
+
+    /* ── OPTIONS (QCM & VF) ── */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt-label {
+      display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px;
+      border-radius: 10px; border: 2px solid var(--border); cursor: pointer;
+      transition: border-color .2s, background .2s, transform .15s; user-select: none;
+    }
+    .opt-label:hover { border-color: #b0bac9; background: #f7f9fc; transform: translateX(3px); }
+    .opt-label input[type="radio"] { display: none; }
+    .opt-marker {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+      border: 2px solid var(--border); background: var(--cream);
+      display: grid; place-items: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px;
+      color: var(--muted); transition: all .2s;
+    }
+    .opt-text { font-size: 14.5px; line-height: 1.55; padding-top: 3px; color: #3a4a62; }
+
+    .opt-label.selected { border-color: var(--orange); background: rgba(240,100,35,.05); }
+    .opt-label.selected .opt-marker { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .opt-label.correct-ans { border-color: var(--correct); background: rgba(26,158,111,.07); }
+    .opt-label.correct-ans .opt-marker { background: var(--correct); border-color: var(--correct); color: #fff; }
+    .opt-label.wrong-ans { border-color: var(--wrong); background: rgba(217,64,64,.06); }
+    .opt-label.wrong-ans .opt-marker { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+    .feedback-msg { margin-top: 12px; font-size: 13.5px; font-weight: 500; display: none; align-items: flex-start; gap: 8px; padding: 12px 14px; border-radius: 8px; line-height: 1.55; }
+    .feedback-msg.show { display: flex; }
+    .feedback-msg.ok { background: rgba(26,158,111,.1); color: #136f4d; }
+    .feedback-msg.ko { background: rgba(217,64,64,.1); color: #a02828; }
+
+    /* ── SITUATION GRID ── */
+    .sit-grid { display: flex; flex-direction: column; gap: 16px; }
+    .sit-row { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .sit-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: #f4f6fb; border-bottom: 1px solid var(--border);
+    }
+    .sit-tag {
+      flex-shrink: 0; padding: 3px 10px; border-radius: 6px;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px;
+      letter-spacing: .05em; color: #fff;
+    }
+    .sit-tag.a { background: #e05050; }
+    .sit-tag.b { background: #c0792c; }
+    .sit-tag.c { background: #3a7ec9; }
+    .sit-prompt { font-size: 14.5px; font-weight: 500; color: var(--navy); }
+    .sit-body { padding: 14px 16px; }
+    textarea {
+      width: 100%; min-height: 80px; resize: vertical;
+      border: 2px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; font-family: 'Karla', sans-serif;
+      font-size: 15px; color: var(--navy); background: #fafbfc;
+      transition: border-color .2s, background .2s; outline: none; line-height: 1.6;
+    }
+    textarea:focus { border-color: var(--orange); background: #fff; }
+    textarea::placeholder { color: #b8c0cf; font-style: italic; }
+    .char-counter { text-align: right; font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .char-counter.warn { color: var(--wrong); }
+
+    /* ── OPEN QUESTION ── */
+    .open-hint { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; font-style: italic; }
+
+    /* ── SUBMIT ── */
+    .submit-section { background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 28px 26px; display: flex; flex-direction: column; gap: 18px; }
+    .submit-section h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px;
+      border-radius: 10px; font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px; font-weight: 700; letter-spacing: .03em;
+      cursor: pointer; border: none; transition: transform .15s, box-shadow .15s, filter .15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 18px rgba(240,100,35,.35); }
+    .btn-primary:hover { filter: brightness(1.07); box-shadow: 0 6px 24px rgba(240,100,35,.45); }
+    .btn-secondary { background: var(--navy); color: #fff; box-shadow: 0 4px 18px rgba(13,31,60,.2); }
+    .btn-secondary:hover { filter: brightness(1.15); }
+    .btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--border); }
+    .btn-outline:hover { border-color: var(--navy); background: var(--cream); }
+
+    /* ── SCORE PANEL ── */
+    #score-panel {
+      display: none; background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+      color: #fff; border-radius: 14px; padding: 28px 26px; position: relative; overflow: hidden;
+    }
+    #score-panel::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(240,100,35,.25) 0%, transparent 60%);
+    }
+    #score-panel.show { display: block; }
+    .score-inner { position: relative; }
+    .score-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 8px; }
+    .score-big { font-family: 'Barlow Condensed', sans-serif; font-size: 64px; font-weight: 800; line-height: 1; color: var(--orange2); }
+    .score-desc { font-size: 16px; color: rgba(255,255,255,.8); margin-top: 8px; line-height: 1.5; }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; padding: 24px 32px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); }
+    footer strong { color: var(--navy); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .hero-inner { padding: 36px 20px 32px; }
+      .instructions, .progress-wrap, main { padding: 0 16px; }
+      .card-header, .card-body { padding: 18px 18px; }
+      .submit-section { padding: 22px 18px; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.10s}
+    .card:nth-child(3){animation-delay:.15s} .card:nth-child(4){animation-delay:.20s}
+    .card:nth-child(5){animation-delay:.25s} .card:nth-child(6){animation-delay:.30s}
+    .card:nth-child(7){animation-delay:.35s}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge"><span class="badge-dot"></span>Formation BDR — Daylindo</span>
+    <h1>Fiche <span>2</span> — Le problème<br>que l'on résout</h1>
+    <p class="hero-sub">Exercices pratiques. Lis chaque question, remplis ta réponse, puis envoie le fichier complété à Miora.</p>
+    <div class="hero-meta">
+      <span class="meta-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        ~10 minutes
+      </span>
+      <span class="meta-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        1 QCM · 3 Vrai/Faux · 1 ouverte · 1 mise en situation
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- INSTRUCTIONS -->
+<div class="instructions">
+  <div class="instr-box">
+    <strong>Instructions :</strong> Pour les QCM et Vrai/Faux, clique sur ta réponse. Pour les questions ouvertes, rédige au moins 2 phrases.
+    Une fois terminé, clique sur <strong>« Télécharger mes réponses »</strong> et envoie le fichier à Miora.
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-label">Progression — <span id="prog-text">0 / 7</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<main id="form-main">
+
+  <!-- ── QCM ── -->
+  <div class="section-label">Question à choix multiple</div>
+
+  <!-- Q1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q1</div>
+      <p class="q-text">Parmi ces 3 problèmes, lequel n'est <strong>PAS</strong> cité dans la fiche Daylindo&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q1">
+        <label class="opt-label" data-q="q1" data-val="A">
+          <input type="radio" name="q1" value="A"/>
+          <span class="opt-marker">A</span>
+          <span class="opt-text">Le turnover élevé — les nouvelles recrues partent rapidement.</span>
+        </label>
+        <label class="opt-label" data-q="q1" data-val="B">
+          <input type="radio" name="q1" value="B"/>
+          <span class="opt-marker">B</span>
+          <span class="opt-text">La perte de savoir-faire — les experts quittent sans transmettre.</span>
+        </label>
+        <label class="opt-label" data-q="q1" data-val="C">
+          <input type="radio" name="q1" value="C"/>
+          <span class="opt-marker">C</span>
+          <span class="opt-text">Le manque de candidats sur le marché du travail.</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q1"></div>
+    </div>
+  </div>
+
+  <!-- ── VRAI / FAUX ── -->
+  <div class="section-label" style="margin-top:8px;">Vrai / Faux</div>
+
+  <!-- Q2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q2</div>
+      <p class="q-text">Le turnover peut coûter cher à une entreprise.</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q2">
+        <label class="opt-label" data-q="q2" data-val="VRAI">
+          <input type="radio" name="q2" value="VRAI"/>
+          <span class="opt-marker" style="font-size:11px;">VRAI</span>
+          <span class="opt-text">Vrai</span>
+        </label>
+        <label class="opt-label" data-q="q2" data-val="FAUX">
+          <input type="radio" name="q2" value="FAUX"/>
+          <span class="opt-marker" style="font-size:11px;">FAUX</span>
+          <span class="opt-text">Faux</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q2"></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q3</div>
+      <p class="q-text">La perte de savoir-faire peut créer des erreurs.</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q3">
+        <label class="opt-label" data-q="q3" data-val="VRAI">
+          <input type="radio" name="q3" value="VRAI"/>
+          <span class="opt-marker" style="font-size:11px;">VRAI</span>
+          <span class="opt-text">Vrai</span>
+        </label>
+        <label class="opt-label" data-q="q3" data-val="FAUX">
+          <input type="radio" name="q3" value="FAUX"/>
+          <span class="opt-marker" style="font-size:11px;">FAUX</span>
+          <span class="opt-text">Faux</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q3"></div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q4</div>
+      <p class="q-text">Toutes les entreprises savent valoriser leurs formations grâce aux financements OPCO.</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q4">
+        <label class="opt-label" data-q="q4" data-val="VRAI">
+          <input type="radio" name="q4" value="VRAI"/>
+          <span class="opt-marker" style="font-size:11px;">VRAI</span>
+          <span class="opt-text">Vrai</span>
+        </label>
+        <label class="opt-label" data-q="q4" data-val="FAUX">
+          <input type="radio" name="q4" value="FAUX"/>
+          <span class="opt-marker" style="font-size:11px;">FAUX</span>
+          <span class="opt-text">Faux</span>
+        </label>
+      </div>
+      <div class="feedback-msg" id="fb-q4"></div>
+    </div>
+  </div>
+
+  <!-- ── QUESTION OUVERTE ── -->
+  <div class="section-label" style="margin-top:8px;">Question ouverte</div>
+
+  <!-- Q5 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num open-q">Q5</div>
+      <p class="q-text">Cite les 3 problèmes principaux que Daylindo aide à résoudre.<br><em>→ Une phrase par problème.</em></p>
+    </div>
+    <div class="card-body">
+      <p class="open-hint">Rédige 3 phrases distinctes, une pour chaque problème. Sois précis·e et concis·e.</p>
+      <textarea id="ans-q5" placeholder="1. ...&#10;2. ...&#10;3. ..." maxlength="600" rows="5" oninput="updateChar('q5',600); updateProgress();"></textarea>
+      <div class="char-counter" id="cc-q5">0 / 600</div>
+    </div>
+  </div>
+
+  <!-- ── MISE EN SITUATION ── -->
+  <div class="section-label" style="margin-top:8px;">Mise en situation</div>
+
+  <!-- Q6 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num sit-q">Q6</div>
+      <p class="q-text">Pour chaque problème ci-dessous, décris la conséquence principale pour l'entreprise.</p>
+    </div>
+    <div class="card-body">
+      <div class="sit-grid">
+
+        <div class="sit-row">
+          <div class="sit-header">
+            <span class="sit-tag a">Sit. A</span>
+            <span class="sit-prompt">Turnover élevé → quelle conséquence&nbsp;?</span>
+          </div>
+          <div class="sit-body">
+            <textarea id="ans-sita" placeholder="Ex. : Les nouvelles recrues partent vite, les équipes sont instables et les managers s'épuisent à reformer en continu..." maxlength="300" rows="3" oninput="updateChar('sita',300); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sita">0 / 300</div>
+          </div>
+        </div>
+
+        <div class="sit-row">
+          <div class="sit-header">
+            <span class="sit-tag b">Sit. B</span>
+            <span class="sit-prompt">Perte de savoir-faire → quelle conséquence&nbsp;?</span>
+          </div>
+          <div class="sit-body">
+            <textarea id="ans-sitb" placeholder="Ex. : Les gestes métiers disparaissent avec les experts — erreurs, perte de qualité, expertise perdue à jamais..." maxlength="300" rows="3" oninput="updateChar('sitb',300); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sitb">0 / 300</div>
+          </div>
+        </div>
+
+        <div class="sit-row">
+          <div class="sit-header">
+            <span class="sit-tag c">Sit. C</span>
+            <span class="sit-prompt">Coûts non valorisés → quelle conséquence&nbsp;?</span>
+          </div>
+          <div class="sit-body">
+            <textarea id="ans-sitc" placeholder="Ex. : L'entreprise dépense pour la formation sans récupérer ce qu'elle pourrait via OPCO ou AFEST..." maxlength="300" rows="3" oninput="updateChar('sitc',300); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sitc">0 / 300</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORE PANEL -->
+  <div id="score-panel">
+    <div class="score-inner">
+      <div class="score-title">Score QCM + Vrai/Faux</div>
+      <div class="score-big" id="score-val">—</div>
+      <div class="score-desc" id="score-desc"></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <h3>Prêt·e à envoyer tes réponses&nbsp;?</h3>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;">Vérifie tes réponses QCM/Vrai-Faux, puis télécharge et envoie à Miora.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkAll()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Vérifier mes réponses
+      </button>
+      <button class="btn btn-secondary" onclick="downloadAnswers()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger mes réponses
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimer
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Daylindo</strong> — Formation BDR &nbsp;·&nbsp; Fiche 2 — Le problème que l'on résout &nbsp;·&nbsp; Exercice interne
+</footer>
+
+<script>
+  const CORRECT = { q1:'C', q2:'VRAI', q3:'VRAI', q4:'FAUX' };
+  const FEEDBACK = {
+    q1: {
+      ok: '✓ Bonne réponse ! Daylindo résout le turnover, la perte de savoir-faire et les coûts cachés — pas le problème de sourcing de candidats.',
+      ko: '✗ Pas tout à fait. Le problème non cité est le manque de candidats (C). Daylindo n\'agit pas sur le recrutement lui-même.'
+    },
+    q2: {
+      ok: '✓ Exact ! Chaque départ recommence le cycle d\'intégration à zéro : temps des managers, erreurs des nouveaux, baisse de productivité.',
+      ko: '✗ FAUX est incorrect. Le turnover a bien un coût réel : managers mobilisés, erreurs, perte de temps et de productivité.'
+    },
+    q3: {
+      ok: '✓ Correct ! Quand un expert part sans transmettre, les nouveaux réapprennent seuls — erreurs, perte de qualité, expertise disparue.',
+      ko: '✗ Incorrect. La perte de savoir-faire crée bien des erreurs et une perte de qualité durable.'
+    },
+    q4: {
+      ok: '✓ Bien vu ! FAUX — Beaucoup d\'entreprises ne savent pas qu\'elles peuvent valoriser leurs dispositifs grâce aux financements OPCO/AFEST.',
+      ko: '✗ C\'est FAUX. La plupart des entreprises ne connaissent pas les possibilités de financement via OPCO ou AFEST.'
+    }
+  };
+
+  let answered = {};
+
+  document.querySelectorAll('.opt-label').forEach(label => {
+    label.addEventListener('click', function() {
+      const q = this.dataset.q;
+      const val = this.dataset.val;
+      this.querySelector('input').checked = true;
+      document.querySelectorAll(`.opt-label[data-q="${q}"]`).forEach(l => l.classList.remove('selected'));
+      this.classList.add('selected');
+      answered[q] = val;
+      updateProgress();
+    });
+  });
+
+  function checkAll() {
+    let score = 0;
+    const total = Object.keys(CORRECT).length;
+    Object.keys(CORRECT).forEach(q => {
+      const chosen = answered[q];
+      const fb = document.getElementById('fb-' + q);
+      const opts = document.querySelectorAll(`.opt-label[data-q="${q}"]`);
+      opts.forEach(l => l.classList.remove('correct-ans','wrong-ans'));
+      if (!chosen) {
+        fb.className = 'feedback-msg show ko';
+        fb.textContent = '⚠ Tu n\'as pas encore sélectionné de réponse.';
+        return;
+      }
+      opts.forEach(l => {
+        if (l.dataset.val === CORRECT[q]) l.classList.add('correct-ans');
+        else if (l.dataset.val === chosen && chosen !== CORRECT[q]) l.classList.add('wrong-ans');
+      });
+      if (chosen === CORRECT[q]) {
+        score++;
+        fb.className = 'feedback-msg show ok';
+        fb.textContent = FEEDBACK[q].ok;
+      } else {
+        fb.className = 'feedback-msg show ko';
+        fb.textContent = FEEDBACK[q].ko;
+      }
+    });
+
+    const sp = document.getElementById('score-panel');
+    sp.classList.add('show');
+    document.getElementById('score-val').textContent = score + ' / ' + total;
+    const descs = [
+      'Continue à bien lire la fiche et réessaie — les bases sont à revoir.',
+      'Quelques erreurs, relis les points sur le turnover et les financements.',
+      'Pas mal ! Encore un peu de travail pour être au top.',
+      'Bien ! Tu maîtrises bien les problèmes que Daylindo résout.',
+      'Parfait ! Tu es prêt·e à parler des enjeux clients avec confiance. 🎉'
+    ];
+    document.getElementById('score-desc').textContent = descs[score] || descs[descs.length-1];
+    sp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function updateChar(id, max) {
+    const ta = document.getElementById('ans-' + id);
+    const cc = document.getElementById('cc-' + id);
+    const len = ta.value.length;
+    cc.textContent = len + ' / ' + max;
+    cc.classList.toggle('warn', len > max * 0.9);
+  }
+
+  const TOTAL_QUESTIONS = 7;
+  function updateProgress() {
+    let done = 0;
+    ['q1','q2','q3','q4'].forEach(q => { if (answered[q]) done++; });
+    if (document.getElementById('ans-q5').value.trim().length > 10) done++;
+    if (document.getElementById('ans-sita').value.trim().length > 10) done++;
+    if (document.getElementById('ans-sitb').value.trim().length > 10) done++;
+    // sitc counts as part of Q6 block — count all 3 together as 2 (q5 + q6)
+    if (document.getElementById('ans-sitc').value.trim().length > 10) done++;
+    const capped = Math.min(done, TOTAL_QUESTIONS);
+    document.getElementById('prog-text').textContent = capped + ' / ' + TOTAL_QUESTIONS;
+    document.getElementById('prog-fill').style.width = (capped / TOTAL_QUESTIONS * 100) + '%';
+  }
+
+  function downloadAnswers() {
+    const ts = new Date().toLocaleString('fr-FR');
+    let txt = '═══════════════════════════════════════════════════\n';
+    txt += '  DAYLINDO — Formation BDR\n';
+    txt += '  FICHE 2 — Le problème que l\'on résout\n';
+    txt += '  Téléchargé le : ' + ts + '\n';
+    txt += '═══════════════════════════════════════════════════\n\n';
+
+    const closedQ = [
+      { id: 'q1', label: 'Q1 — QCM : Lequel n\'est PAS un problème Daylindo ?' },
+      { id: 'q2', label: 'Q2 — Vrai/Faux : Le turnover coûte cher ?' },
+      { id: 'q3', label: 'Q3 — Vrai/Faux : La perte de savoir-faire crée des erreurs ?' },
+      { id: 'q4', label: 'Q4 — Vrai/Faux : Toutes les entreprises connaissent les OPCO ?' }
+    ];
+    closedQ.forEach(({ id, label }) => {
+      txt += '───────────────────────────────────────────────────\n';
+      txt += label + '\n';
+      const rep = answered[id] || '(non répondu)';
+      txt += 'Réponse : ' + rep + '\n';
+      if (answered[id]) {
+        const ok = answered[id] === CORRECT[id];
+        txt += 'Résultat : ' + (ok ? '✓ Correct' : '✗ Incorrect — bonne réponse : ' + CORRECT[id]) + '\n';
+      }
+      txt += '\n';
+    });
+
+    txt += '───────────────────────────────────────────────────\n';
+    txt += 'Q5 — Les 3 problèmes principaux résolus par Daylindo\n';
+    txt += 'Réponse : ' + (document.getElementById('ans-q5').value.trim() || '(non rempli)') + '\n\n';
+
+    txt += '───────────────────────────────────────────────────\n';
+    txt += 'Q6 — Mise en situation\n\n';
+    txt += 'Sit.A (Turnover élevé → conséquence) :\n' + (document.getElementById('ans-sita').value.trim() || '(non rempli)') + '\n\n';
+    txt += 'Sit.B (Perte de savoir-faire → conséquence) :\n' + (document.getElementById('ans-sitb').value.trim() || '(non rempli)') + '\n\n';
+    txt += 'Sit.C (Coûts non valorisés → conséquence) :\n' + (document.getElementById('ans-sitc').value.trim() || '(non rempli)') + '\n\n';
+
+    txt += '═══════════════════════════════════════════════════\n';
+    txt += 'Envoie ce fichier à Miora une fois complété.\n';
+
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Daylindo_Fiche2_reponses.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
