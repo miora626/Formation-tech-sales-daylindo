@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fiche 6 — Le rôle du BDR chez Daylindo | Daylindo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Karla:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0d1f3c;
+      --navy2:  #162d54;
+      --orange: #f06423;
+      --orng2:  #ff813f;
+      --cream:  #faf7f2;
+      --muted:  #8a95a8;
+      --border: #d8dde7;
+      --ok:     #1a9e6f;
+      --ko:     #d94040;
+      --shadow: 0 4px 28px rgba(13,31,60,.10);
+      --m1: #e05050;
+      --m2: #3a7ec9;
+      --m3: #f06423;
+      --m4: #1a9e6f;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Karla', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; }
+
+    /* HERO */
+    .hero { background: var(--navy); color: #fff; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 120% at 110% -10%, rgba(240,100,35,.35) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at -10% 110%, rgba(22,45,84,.8) 0%, transparent 55%); pointer-events: none; }
+    .hero-inner { position: relative; max-width: 900px; margin: 0 auto; padding: 52px 32px 44px; display: flex; flex-direction: column; gap: 12px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(240,100,35,.18); border: 1px solid rgba(240,100,35,.4); color: var(--orng2); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; width: fit-content; }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orng2); }
+    .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px,5.5vw,50px); font-weight: 800; line-height: 1.05; }
+    .hero h1 span { color: var(--orng2); }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,.65); max-width: 560px; line-height: 1.6; }
+    .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+    .meta-pill { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,.55); }
+
+    /* MISSIONS RAPPEL */
+    .rappel-bar { max-width: 900px; margin: 24px auto 0; padding: 0 32px; }
+    .rappel-title { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .missions-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .mis-chip { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 10px; background: #fff; box-shadow: var(--shadow); }
+    .mis-num { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 12px; color: #fff; flex-shrink: 0; }
+    .mis-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; }
+    .mis-arrow { font-size: 18px; color: var(--muted); }
+
+    /* INSTRUCTIONS */
+    .instructions { max-width: 900px; margin: 16px auto 0; padding: 0 32px; }
+    .instr-box { background: #fff; border-left: 4px solid var(--orange); border-radius: 0 10px 10px 0; padding: 16px 20px; font-size: 14px; color: var(--navy); line-height: 1.65; box-shadow: var(--shadow); }
+    .instr-box strong { color: var(--orange); }
+
+    /* PROGRESS */
+    .progress-wrap { max-width: 900px; margin: 20px auto 0; padding: 0 32px; }
+    .progress-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--orng2)); border-radius: 99px; width: 0%; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+    /* MAIN */
+    main { max-width: 900px; margin: 28px auto 60px; padding: 0 32px; display: flex; flex-direction: column; gap: 24px; }
+    .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* CARD */
+    .card { background: #fff; border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; transition: box-shadow .25s; animation: fadeUp .4s ease both; }
+    .card:focus-within { box-shadow: 0 6px 36px rgba(240,100,35,.14), 0 0 0 2px rgba(240,100,35,.25); }
+    .card-header { padding: 22px 26px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 16px; }
+    .q-num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; background: var(--navy); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 700; display: grid; place-items: center; }
+    .q-num.audit  { background: var(--ko); }
+    .q-num.qcm    { background: var(--navy); }
+    .q-num.order  { background: var(--m2); }
+    .q-num.phrase { background: var(--m4); }
+    .q-text { font-size: 15.5px; font-weight: 500; line-height: 1.55; padding-top: 4px; }
+    .card-body { padding: 20px 26px 24px; }
+
+    /* OPTIONS */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt-label { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-radius: 10px; border: 2px solid var(--border); cursor: pointer; transition: border-color .2s, background .2s, transform .15s; user-select: none; }
+    .opt-label:hover { border-color: #b0bac9; background: #f7f9fc; transform: translateX(3px); }
+    .opt-label input[type="radio"] { display: none; }
+    .opt-marker { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--border); background: var(--cream); display: grid; place-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted); transition: all .2s; }
+    .opt-text { font-size: 14.5px; line-height: 1.55; padding-top: 3px; color: #3a4a62; }
+    .opt-label.selected { border-color: var(--orange); background: rgba(240,100,35,.05); }
+    .opt-label.selected .opt-marker { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .opt-label.correct-ans { border-color: var(--ok); background: rgba(26,158,111,.07); }
+    .opt-label.correct-ans .opt-marker { background: var(--ok); border-color: var(--ok); color: #fff; }
+    .opt-label.wrong-ans { border-color: var(--ko); background: rgba(217,64,64,.06); }
+    .opt-label.wrong-ans .opt-marker { background: var(--ko); border-color: var(--ko); color: #fff; }
+    .feedback-msg { margin-top: 12px; font-size: 13.5px; font-weight: 500; display: none; align-items: flex-start; gap: 8px; padding: 12px 14px; border-radius: 8px; line-height: 1.55; }
+    .feedback-msg.show { display: flex; }
+    .feedback-msg.ok { background: rgba(26,158,111,.1); color: #136f4d; }
+    .feedback-msg.ko { background: rgba(217,64,64,.1); color: #a02828; }
+
+    /* AUDIT GRID */
+    .audit-grid { display: flex; flex-direction: column; gap: 20px; }
+    .audit-row { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color .2s; }
+    .audit-row:focus-within { border-color: var(--orange); }
+    .audit-header { padding: 14px 18px; background: #f4f6fb; border-bottom: 1px solid var(--border); }
+    .audit-sit-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .10em; text-transform: uppercase; color: var(--ko); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .audit-sit-tag::before { content: '⚠'; }
+    .audit-scenario { font-size: 14px; line-height: 1.65; color: var(--navy); font-style: italic; }
+    .audit-indice { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12.5px; color: #7a5020; background: rgba(240,100,35,.09); border-radius: 6px; padding: 5px 10px; font-style: normal; }
+    .audit-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+    .field-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .field-label.err { color: var(--ko); }
+    .field-label.cor { color: var(--ok); }
+
+    textarea { width: 100%; min-height: 72px; resize: vertical; border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'Karla', sans-serif; font-size: 15px; color: var(--navy); background: #fafbfc; transition: border-color .2s, background .2s; outline: none; line-height: 1.6; }
+    textarea:focus { border-color: var(--orange); background: #fff; }
+    textarea::placeholder { color: #b8c0cf; font-style: italic; }
+    .char-counter { text-align: right; font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .char-counter.warn { color: var(--ko); }
+
+    /* ORDER EXERCISE */
+    .order-intro { font-size: 14px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; font-style: italic; }
+    .order-grid { display: flex; flex-direction: column; gap: 10px; }
+    .order-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; background: var(--cream); transition: border-color .2s, background .2s; }
+    .order-row.correct-order { border-color: var(--ok); background: rgba(26,158,111,.06); }
+    .order-row.wrong-order { border-color: var(--ko); background: rgba(217,64,64,.05); }
+    .order-label { flex: 1; font-size: 14.5px; font-weight: 500; color: var(--navy); }
+    .num-btns { display: flex; gap: 5px; }
+    .num-btn {
+      width: 30px; height: 30px; border-radius: 7px; border: 2px solid var(--border);
+      background: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 14px; color: var(--muted); cursor: pointer; display: grid; place-items: center;
+      transition: all .18s;
+    }
+    .num-btn:hover { border-color: var(--orange); background: rgba(240,100,35,.07); color: var(--orange); }
+    .num-btn.selected { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .order-result { font-size: 12.5px; font-weight: 600; margin-left: 6px; }
+    #order-feedback { margin-top: 12px; font-size: 13.5px; line-height: 1.6; display: none; padding: 12px 14px; border-radius: 8px; }
+    #order-feedback.show { display: block; }
+    #order-feedback.ok { background: rgba(26,158,111,.1); color: #136f4d; }
+    #order-feedback.ko { background: rgba(217,64,64,.1); color: #a02828; }
+
+    /* Q6 PHRASE */
+    .open-hint { font-size: 13px; color: var(--muted); margin-bottom: 10px; font-style: italic; line-height: 1.5; }
+    .phrase-example { background: rgba(26,158,111,.07); border: 1px solid rgba(26,158,111,.3); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13.5px; color: #136f4d; display: none; line-height: 1.6; }
+    .phrase-example.show { display: block; }
+
+    /* SUBMIT */
+    .submit-section { background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 28px 26px; display: flex; flex-direction: column; gap: 18px; }
+    .submit-section h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 10px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .03em; cursor: pointer; border: none; transition: transform .15s, box-shadow .15s, filter .15s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 18px rgba(240,100,35,.35); }
+    .btn-primary:hover { filter: brightness(1.07); }
+    .btn-secondary { background: var(--navy); color: #fff; box-shadow: 0 4px 18px rgba(13,31,60,.2); }
+    .btn-secondary:hover { filter: brightness(1.15); }
+    .btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--border); }
+    .btn-outline:hover { border-color: var(--navy); background: var(--cream); }
+
+    /* SCORE */
+    #score-panel { display: none; background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color: #fff; border-radius: 14px; padding: 28px 26px; position: relative; overflow: hidden; }
+    #score-panel::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(240,100,35,.25) 0%, transparent 60%); }
+    #score-panel.show { display: block; }
+    .score-inner { position: relative; }
+    .score-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 8px; }
+    .score-big { font-family: 'Barlow Condensed', sans-serif; font-size: 64px; font-weight: 800; line-height: 1; color: var(--orng2); }
+    .score-desc { font-size: 16px; color: rgba(255,255,255,.8); margin-top: 8px; line-height: 1.5; }
+
+    footer { text-align: center; padding: 24px 32px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); }
+    footer strong { color: var(--navy); }
+
+    @media (max-width: 600px) {
+      .hero-inner { padding: 36px 20px 32px; }
+      .rappel-bar, .instructions, .progress-wrap, main { padding: 0 16px; }
+      .card-header, .card-body { padding: 18px 18px; }
+      .submit-section { padding: 22px 18px; }
+      .missions-flow { flex-direction: column; align-items: flex-start; }
+      .mis-arrow { display: none; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}
+    .card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.16s}
+    .card:nth-child(5){animation-delay:.20s}.card:nth-child(6){animation-delay:.24s}
+    .card:nth-child(7){animation-delay:.28s}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge"><span class="badge-dot"></span>Formation BDR — Daylindo</span>
+    <h1>Fiche <span>6</span> — Le rôle du BDR<br><span style="font-size:.75em;opacity:.8;">chez Daylindo</span></h1>
+    <p class="hero-sub">Maîtrise les 4 missions du BDR, évite les erreurs classiques et structure chaque appel pour décrocher le rendez-vous.</p>
+    <div class="hero-meta">
+      <span class="meta-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>~15 minutes</span>
+      <span class="meta-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>3 Audits · 4 QCM · 1 Ordre · 1 Phrase clé</span>
+    </div>
+  </div>
+</header>
+
+<!-- RAPPEL MISSIONS -->
+<div class="rappel-bar">
+  <div class="rappel-title">💡 Rappel — Les 4 missions du BDR dans l'ordre</div>
+  <div class="missions-flow">
+    <div class="mis-chip"><div class="mis-num" style="background:var(--m1)">1</div><span class="mis-label" style="color:var(--m1)">Attirer l'attention</span></div>
+    <span class="mis-arrow">→</span>
+    <div class="mis-chip"><div class="mis-num" style="background:var(--m2)">2</div><span class="mis-label" style="color:var(--m2)">Comprendre les enjeux</span></div>
+    <span class="mis-arrow">→</span>
+    <div class="mis-chip"><div class="mis-num" style="background:var(--m3)">3</div><span class="mis-label" style="color:var(--m3)">Créer de l'intérêt</span></div>
+    <span class="mis-arrow">→</span>
+    <div class="mis-chip"><div class="mis-num" style="background:var(--m4)">4</div><span class="mis-label" style="color:var(--m4)">Proposer un RDV</span></div>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="instructions">
+  <div class="instr-box" style="margin-top:16px;">
+    <strong>Instructions :</strong> Partie 1 — identifie l'erreur et écris la correction. Partie 2 — QCM. Partie 3 — remets les 4 missions dans l'ordre exact et rédige ta phrase de RDV. Clique sur <strong>« Vérifier »</strong> puis <strong>« Télécharger »</strong>.
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-label">Progression — <span id="prog-text">0 / 9</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<main>
+
+  <!-- PARTIE 1 — AUDIT -->
+  <div class="section-label">Partie 1 — L'audit de l'appel : identifie l'erreur et la correction</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num audit">A</div>
+      <p class="q-text">Pour chaque situation, identifie l'erreur du BDR et écris la correction à appliquer.</p>
+    </div>
+    <div class="card-body">
+      <div class="audit-grid">
+
+        <!-- Sit A -->
+        <div class="audit-row">
+          <div class="audit-header">
+            <div class="audit-sit-tag">Sit. A — Le monologue</div>
+            <p class="audit-scenario">Le BDR est au téléphone depuis 3 minutes et monologue pour détailler toutes les étapes de la démarche Daylindo sans laisser le prospect respirer.</p>
+            <div class="audit-indice">💡 Indice : que faire pour que le prospect ne décroche pas mentalement ?</div>
+          </div>
+          <div class="audit-body">
+            <div>
+              <div class="field-label err">❌ Erreur commise</div>
+              <textarea id="err-a" placeholder="Ex. : Le BDR veut tout expliquer et parle trop longtemps sans impliquer le prospect..." maxlength="250" rows="2" oninput="updateChar('err-a',250); updateProgress();"></textarea>
+              <div class="char-counter" id="cc-err-a">0 / 250</div>
+            </div>
+            <div>
+              <div class="field-label cor">✓ Correction à appliquer</div>
+              <textarea id="cor-a" placeholder="Ex. : Donner juste assez pour créer l'intérêt, puis se taire et poser des questions pour réengager le prospect..." maxlength="300" rows="2" oninput="updateChar('cor-a',300); updateProgress();"></textarea>
+              <div class="char-counter" id="cc-cor-a">0 / 300</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sit B -->
+        <div class="audit-row">
+          <div class="audit-header">
+            <div class="audit-sit-tag">Sit. B — Le vendeur prématuré</div>
+            <p class="audit-scenario">Le prospect semble intéressé, et le BDR lui répond : <em>«&nbsp;C'est parfait, je vous envoie notre contrat et nos tarifs pour que vous puissiez nous acheter la prestation.&nbsp;»</em></p>
+            <div class="audit-indice">💡 Indice : souviens-toi que ton rôle n'est pas de vendre</div>
+          </div>
+          <div class="audit-body">
+            <div>
+              <div class="field-label err">❌ Erreur commise</div>
+              <textarea id="err-b" placeholder="Ex. : Le BDR cherche à vendre directement au téléphone au lieu de qualifier et proposer un RDV..." maxlength="250" rows="2" oninput="updateChar('err-b',250); updateProgress();"></textarea>
+              <div class="char-counter" id="cc-err-b">0 / 250</div>
+            </div>
+            <div>
+              <div class="field-label cor">✓ Correction à appliquer</div>
+              <textarea id="cor-b" placeholder="Ex. : Proposer un rendez-vous avec un expert Daylindo — pas négocier ni vendre par téléphone. Le rôle du BDR est d'ouvrir la porte..." maxlength="300" rows="2" oninput="updateChar('cor-b',300); updateProgress();"></textarea>
+              <div class="char-counter" id="cc-cor-b">0 / 300</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sit C -->
+        <div class="audit-row">
+          <div class="audit-header">
+            <div class="audit-sit-tag">Sit. C — Le technicien dès le départ</div>
+            <p class="audit-scenario">Dès les premières secondes, le BDR se lance dans une explication technique complexe sur la différence entre une plateforme et une méthode d'ingénierie.</p>
+            <div class="audit-indice">💡 Indice : que faut-il donner au prospect pour attirer son attention sans le perdre ?</div>
+          </div>
+          <div class="audit-body">
+            <div>
+              <div class="field-label err">❌ Erreur commise</div>
+              <textarea id="err-c" placeholder="Ex. : Le BDR entre dans des détails techniques trop tôt, avant même d'avoir créé l'intérêt ou compris les enjeux du prospect..." maxlength="250" rows="2" oninput="updateChar('err-c',250); updateProgress();"></textarea>
+              <div class="char-counter" id="cc-err-c">0 / 250</div>
+            </div>
+            <div>
+              <div class="field-label cor">✓ Correction à appliquer</div>
+              <textarea id="cor-c" placeholder="Ex. : Utiliser une accroche claire avec un bénéfice simple pour attirer l'attention d'abord — les détails techniques viennent après, lors du RDV avec l'expert..." maxlength="300" rows="2" oninput="updateChar('cor-c',300); updateProgress();"></textarea>
+              <div class="char-counter" id="cc-cor-c">0 / 300</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PARTIE 2 — QCM -->
+  <div class="section-label" style="margin-top:8px;">Partie 2 — QCM : Maîtriser les 4 missions du BDR</div>
+
+  <!-- Q1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num qcm">Q1</div>
+      <p class="q-text">Selon la fiche, quel est ton objectif principal et final en tant que BDR chez Daylindo&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q1">
+        <label class="opt-label" data-q="q1" data-val="A"><input type="radio" name="q1" value="A"/><span class="opt-marker">A</span><span class="opt-text">Vendre la solution directement au téléphone.</span></label>
+        <label class="opt-label" data-q="q1" data-val="B"><input type="radio" name="q1" value="B"/><span class="opt-marker">B</span><span class="opt-text">Présenter l'intégralité de l'offre Daylindo en détail.</span></label>
+        <label class="opt-label" data-q="q1" data-val="C"><input type="radio" name="q1" value="C"/><span class="opt-marker">C</span><span class="opt-text">Obtenir un rendez-vous qualifié avec un expert.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q1"></div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num qcm">Q2</div>
+      <p class="q-text">Que dois-tu faire pour accomplir ta mission n°2 — <strong>«&nbsp;Comprendre les enjeux&nbsp;»</strong>&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q2">
+        <label class="opt-label" data-q="q2" data-val="A"><input type="radio" name="q2" value="A"/><span class="opt-marker">A</span><span class="opt-text">Parler de Daylindo pendant 5 minutes.</span></label>
+        <label class="opt-label" data-q="q2" data-val="B"><input type="radio" name="q2" value="B"/><span class="opt-marker">B</span><span class="opt-text">Poser des questions, écouter et creuser pour découvrir si le prospect a un besoin réel.</span></label>
+        <label class="opt-label" data-q="q2" data-val="C"><input type="radio" name="q2" value="C"/><span class="opt-marker">C</span><span class="opt-text">Faire comprendre qu'il y a une opportunité financière.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q2"></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num qcm">Q3</div>
+      <p class="q-text">Quel est le risque majeur si tu essaies de vendre directement au téléphone au lieu de proposer un rendez-vous&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q3">
+        <label class="opt-label" data-q="q3" data-val="A"><input type="radio" name="q3" value="A"/><span class="opt-marker">A</span><span class="opt-text">Le prospect va se braquer.</span></label>
+        <label class="opt-label" data-q="q3" data-val="B"><input type="radio" name="q3" value="B"/><span class="opt-marker">B</span><span class="opt-text">Le prospect va acheter sans négocier.</span></label>
+        <label class="opt-label" data-q="q3" data-val="C"><input type="radio" name="q3" value="C"/><span class="opt-marker">C</span><span class="opt-text">Le prospect va demander à parler au DRH.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q3"></div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num qcm">Q4</div>
+      <p class="q-text">Si le prospect décroche mentalement pendant que tu parles, quelle est la solution immédiate&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q4">
+        <label class="opt-label" data-q="q4" data-val="A"><input type="radio" name="q4" value="A"/><span class="opt-marker">A</span><span class="opt-text">Proposer un rendez-vous tout de suite.</span></label>
+        <label class="opt-label" data-q="q4" data-val="B"><input type="radio" name="q4" value="B"/><span class="opt-marker">B</span><span class="opt-text">Poser des questions au prospect pour le faire participer.</span></label>
+        <label class="opt-label" data-q="q4" data-val="C"><input type="radio" name="q4" value="C"/><span class="opt-marker">C</span><span class="opt-text">Parler plus fort pour attirer son attention.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q4"></div>
+    </div>
+  </div>
+
+  <!-- PARTIE 3 — ORDRE + PHRASE -->
+  <div class="section-label" style="margin-top:8px;">Partie 3 — Structuration de l'appel</div>
+
+  <!-- Q5 — Ordre -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num order">Q5</div>
+      <p class="q-text">La chronologie de l'appel — Remets ces 4 missions dans l'ordre exact (de 1 à 4).</p>
+    </div>
+    <div class="card-body">
+      <p class="order-intro">Clique sur le chiffre correspondant à la position de chaque mission dans la chronologie d'un appel réussi.</p>
+      <div class="order-grid">
+        <div class="order-row" id="or-interet">
+          <span class="order-label">💡 Créer de l'intérêt</span>
+          <div class="num-btns">
+            <button type="button" class="num-btn" data-mis="interet" data-val="1" onclick="selectOrder(this)">1</button>
+            <button type="button" class="num-btn" data-mis="interet" data-val="2" onclick="selectOrder(this)">2</button>
+            <button type="button" class="num-btn" data-mis="interet" data-val="3" onclick="selectOrder(this)">3</button>
+            <button type="button" class="num-btn" data-mis="interet" data-val="4" onclick="selectOrder(this)">4</button>
+          </div>
+          <span class="order-result" id="res-interet"></span>
+        </div>
+        <div class="order-row" id="or-attention">
+          <span class="order-label">🎯 Attirer l'attention</span>
+          <div class="num-btns">
+            <button type="button" class="num-btn" data-mis="attention" data-val="1" onclick="selectOrder(this)">1</button>
+            <button type="button" class="num-btn" data-mis="attention" data-val="2" onclick="selectOrder(this)">2</button>
+            <button type="button" class="num-btn" data-mis="attention" data-val="3" onclick="selectOrder(this)">3</button>
+            <button type="button" class="num-btn" data-mis="attention" data-val="4" onclick="selectOrder(this)">4</button>
+          </div>
+          <span class="order-result" id="res-attention"></span>
+        </div>
+        <div class="order-row" id="or-rdv">
+          <span class="order-label">📅 Proposer un rendez-vous</span>
+          <div class="num-btns">
+            <button type="button" class="num-btn" data-mis="rdv" data-val="1" onclick="selectOrder(this)">1</button>
+            <button type="button" class="num-btn" data-mis="rdv" data-val="2" onclick="selectOrder(this)">2</button>
+            <button type="button" class="num-btn" data-mis="rdv" data-val="3" onclick="selectOrder(this)">3</button>
+            <button type="button" class="num-btn" data-mis="rdv" data-val="4" onclick="selectOrder(this)">4</button>
+          </div>
+          <span class="order-result" id="res-rdv"></span>
+        </div>
+        <div class="order-row" id="or-enjeux">
+          <span class="order-label">🔍 Comprendre les enjeux</span>
+          <div class="num-btns">
+            <button type="button" class="num-btn" data-mis="enjeux" data-val="1" onclick="selectOrder(this)">1</button>
+            <button type="button" class="num-btn" data-mis="enjeux" data-val="2" onclick="selectOrder(this)">2</button>
+            <button type="button" class="num-btn" data-mis="enjeux" data-val="3" onclick="selectOrder(this)">3</button>
+            <button type="button" class="num-btn" data-mis="enjeux" data-val="4" onclick="selectOrder(this)">4</button>
+          </div>
+          <span class="order-result" id="res-enjeux"></span>
+        </div>
+      </div>
+      <div id="order-feedback"></div>
+    </div>
+  </div>
+
+  <!-- Q6 — Phrase RDV -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num phrase">Q6</div>
+      <p class="q-text">L'ouverture de la porte — Rédige la phrase exacte pour proposer un rendez-vous (Mission 4).</p>
+    </div>
+    <div class="card-body">
+      <p class="open-hint">Tu as passé les 3 premières étapes avec succès. Le prospect a écouté et compris qu'il y a un bénéfice potentiel pour lui. → Rédige ta phrase de proposition de RDV, naturelle et non-pressante.</p>
+      <textarea id="ans-q6" placeholder="Ex. : Est-ce que ça vaut le coup qu'on vous montre comment cela fonctionne concrètement ?" maxlength="400" rows="3" oninput="updateChar('q6',400); updateProgress();"></textarea>
+      <div class="char-counter" id="cc-q6">0 / 400</div>
+      <div class="phrase-example" id="phrase-ex">
+        ✅ Phrase type tirée de la fiche : <em>«&nbsp;Est-ce que ça vaut le coup qu'on vous montre comment cela fonctionne concrètement&nbsp;?&nbsp;»</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="score-panel">
+    <div class="score-inner">
+      <div class="score-title">Score QCM + Ordre des missions</div>
+      <div class="score-big" id="score-val">—</div>
+      <div class="score-desc" id="score-desc"></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <h3>Prêt·e à envoyer tes réponses&nbsp;?</h3>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;">Vérifie tes QCM et l'ordre des missions, puis télécharge le fichier et envoie-le à Miora.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkAll()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Vérifier mes réponses
+      </button>
+      <button class="btn btn-secondary" onclick="downloadAnswers()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger mes réponses
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimer
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Daylindo</strong> — Formation BDR &nbsp;·&nbsp; Fiche 6 — Le rôle du BDR chez Daylindo &nbsp;·&nbsp; Exercice interne
+</footer>
+
+<script>
+  const QCM_CORRECT = { q1:'C', q2:'B', q3:'A', q4:'B' };
+  const QCM_FEEDBACK = {
+    q1: { ok:'✓ Exact ! L\'objectif final du BDR est d\'obtenir un RDV qualifié. Pas vendre, pas former, pas négocier — ouvrir la porte, c\'est tout.', ko:'✗ Incorrect. Le BDR n\'est pas là pour vendre ni pour présenter tout en détail — son seul objectif final est d\'obtenir un rendez-vous qualifié avec un expert.' },
+    q2: { ok:'✓ Bonne réponse ! Poser des questions, écouter, creuser — celui qui écoute le mieux vend le plus. Le monologue ne sert à rien.', ko:'✗ Incorrect. La mission "Comprendre les enjeux" se fait en posant des questions et en écoutant — pas en parlant pendant 5 minutes.' },
+    q3: { ok:'✓ Correct ! Si tu forces la vente par téléphone, le prospect se braque. Ton rôle est d\'ouvrir la porte, pas de la forcer.', ko:'✗ Incorrect. Chercher à vendre directement braque le prospect. Il faut ouvrir la porte doucement — proposer un RDV, pas négocier un contrat.' },
+    q4: { ok:'✓ Bien ! Poser des questions réengage immédiatement le prospect. Le monologue endort — le dialogue maintient l\'attention.', ko:'✗ Incorrect. La solution immédiate est de poser une question — ça réengage le prospect dans la conversation sans effort.' }
+  };
+
+  // Correct order: attention=1, enjeux=2, interet=3, rdv=4
+  const ORDER_CORRECT = { attention:'1', enjeux:'2', interet:'3', rdv:'4' };
+  let orderSelected = {};
+  let qcmAnswered = {};
+
+  function selectOrder(btn) {
+    const mis = btn.dataset.mis;
+    const val = btn.dataset.val;
+    document.querySelectorAll(`[data-mis="${mis}"]`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    orderSelected[mis] = val;
+    updateProgress();
+  }
+
+  document.querySelectorAll('.opt-label').forEach(label => {
+    label.addEventListener('click', function() {
+      const q = this.dataset.q;
+      const val = this.dataset.val;
+      this.querySelector('input').checked = true;
+      document.querySelectorAll(`.opt-label[data-q="${q}"]`).forEach(l => l.classList.remove('selected'));
+      this.classList.add('selected');
+      qcmAnswered[q] = val;
+      updateProgress();
+    });
+  });
+
+  function checkAll() {
+    let score = 0, total = 0;
+
+    // QCM
+    Object.keys(QCM_CORRECT).forEach(q => {
+      total++;
+      const chosen = qcmAnswered[q];
+      const fb = document.getElementById('fb-' + q);
+      const opts = document.querySelectorAll(`.opt-label[data-q="${q}"]`);
+      opts.forEach(l => l.classList.remove('correct-ans','wrong-ans'));
+      if (!chosen) { fb.className='feedback-msg show ko'; fb.textContent='⚠ Tu n\'as pas encore sélectionné de réponse.'; return; }
+      opts.forEach(l => {
+        if (l.dataset.val === QCM_CORRECT[q]) l.classList.add('correct-ans');
+        else if (l.dataset.val === chosen && chosen !== QCM_CORRECT[q]) l.classList.add('wrong-ans');
+      });
+      if (chosen === QCM_CORRECT[q]) { score++; fb.className='feedback-msg show ok'; fb.textContent=QCM_FEEDBACK[q].ok; }
+      else { fb.className='feedback-msg show ko'; fb.textContent=QCM_FEEDBACK[q].ko; }
+    });
+
+    // Order check
+    total++;
+    let orderScore = 0;
+    const orderMissions = ['attention','enjeux','interet','rdv'];
+    const orderLabels = { attention:'Attirer l\'attention', enjeux:'Comprendre les enjeux', interet:'Créer de l\'intérêt', rdv:'Proposer un RDV' };
+    orderMissions.forEach(m => {
+      const row = document.getElementById('or-' + m);
+      const res = document.getElementById('res-' + m);
+      const chosen = orderSelected[m];
+      row.classList.remove('correct-order','wrong-order');
+      if (!chosen) { res.textContent = ''; return; }
+      if (chosen === ORDER_CORRECT[m]) {
+        row.classList.add('correct-order');
+        res.textContent = '✓';
+        res.style.color = 'var(--ok)';
+        orderScore++;
+      } else {
+        row.classList.add('wrong-order');
+        res.textContent = '✗ (' + ORDER_CORRECT[m] + ')';
+        res.style.color = 'var(--ko)';
+      }
+    });
+
+    const ofb = document.getElementById('order-feedback');
+    if (orderScore === 4) {
+      score++;
+      ofb.className = 'show ok';
+      ofb.textContent = '✓ Parfait ! L\'ordre est exact : 1. Attirer l\'attention → 2. Comprendre les enjeux → 3. Créer de l\'intérêt → 4. Proposer un RDV.';
+    } else {
+      ofb.className = 'show ko';
+      ofb.textContent = '✗ L\'ordre correct est : 1. Attirer l\'attention → 2. Comprendre les enjeux → 3. Créer de l\'intérêt → 4. Proposer un RDV.';
+    }
+
+    // Show phrase example
+    if (document.getElementById('ans-q6').value.trim().length > 5) {
+      document.getElementById('phrase-ex').classList.add('show');
+    }
+
+    const sp = document.getElementById('score-panel');
+    sp.classList.add('show');
+    document.getElementById('score-val').textContent = score + ' / ' + total;
+    const pct = score / total;
+    let desc = '';
+    if (pct < 0.5) desc = 'Les missions du BDR sont à retravailler — relis bien la fiche et les erreurs classiques.';
+    else if (pct < 0.75) desc = 'Pas mal ! Quelques points à consolider, notamment l\'ordre des missions.';
+    else if (pct < 1) desc = 'Très bien ! Tu maîtrises le rôle du BDR. Peaufine les derniers détails.';
+    else desc = 'Parfait ! Tu maîtrises les 4 missions, les erreurs à éviter et la structure d\'un appel. 🎉';
+    document.getElementById('score-desc').textContent = desc;
+    sp.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  function updateChar(id, max) {
+    const ta = document.getElementById(id.startsWith('ans-') || id.startsWith('err-') || id.startsWith('cor-') ? id : 'ans-' + id);
+    if (!ta) return;
+    const cc = document.getElementById('cc-' + id);
+    if (!cc) return;
+    const len = ta.value.length;
+    cc.textContent = len + ' / ' + max;
+    cc.classList.toggle('warn', len > max * 0.9);
+  }
+
+  function updateProgress() {
+    let done = 0;
+    // Audits: 3 × (erreur + correction) = 6 fields
+    ['a','b','c'].forEach(s => {
+      if (document.getElementById('err-' + s).value.trim().length > 5) done++;
+      if (document.getElementById('cor-' + s).value.trim().length > 5) done++;
+    });
+    // QCM: 4
+    ['q1','q2','q3','q4'].forEach(q => { if (qcmAnswered[q]) done++; });
+    // Order: 4 selections
+    ['attention','enjeux','interet','rdv'].forEach(m => { if (orderSelected[m]) done++; });
+    // Q6 phrase
+    if (document.getElementById('ans-q6').value.trim().length > 5) done++;
+
+    // total trackable = 6+4+4+1 = 15, cap display at 9
+    const capped = Math.min(Math.floor(done / 15 * 9), 9);
+    document.getElementById('prog-text').textContent = capped + ' / 9';
+    document.getElementById('prog-fill').style.width = (done / 15 * 100) + '%';
+  }
+
+  function downloadAnswers() {
+    const ts = new Date().toLocaleString('fr-FR');
+    let txt = '═══════════════════════════════════════════════════\n';
+    txt += '  DAYLINDO — Formation BDR\n';
+    txt += '  FICHE 6 — Le rôle du BDR chez Daylindo\n';
+    txt += '  Téléchargé le : ' + ts + '\n';
+    txt += '═══════════════════════════════════════════════════\n\n';
+
+    txt += '── PARTIE 1 : AUDIT DE L\'APPEL ─────────────────────\n\n';
+    const sitLabels = { a:'Sit.A — Le monologue', b:'Sit.B — Le vendeur prématuré', c:'Sit.C — Le technicien dès le départ' };
+    ['a','b','c'].forEach(s => {
+      txt += sitLabels[s] + '\n';
+      txt += 'Erreur : ' + (document.getElementById('err-' + s).value.trim() || '(non rempli)') + '\n';
+      txt += 'Correction : ' + (document.getElementById('cor-' + s).value.trim() || '(non rempli)') + '\n\n';
+    });
+
+    txt += '── PARTIE 2 : QCM ───────────────────────────────────\n\n';
+    const qLabels = { q1:'Q1 — Objectif principal du BDR ?', q2:'Q2 — Que faire pour "Comprendre les enjeux" ?', q3:'Q3 — Risque de vendre directement au téléphone ?', q4:'Q4 — Solution si le prospect décroche mentalement ?' };
+    Object.keys(QCM_CORRECT).forEach(q => {
+      txt += qLabels[q] + '\n';
+      const rep = qcmAnswered[q] || '(non répondu)';
+      txt += 'Réponse : ' + rep;
+      if (qcmAnswered[q]) txt += '  →  ' + (qcmAnswered[q] === QCM_CORRECT[q] ? '✓ Correct' : '✗ Incorrect (bonne réponse : ' + QCM_CORRECT[q] + ')');
+      txt += '\n\n';
+    });
+
+    txt += '── PARTIE 3 : STRUCTURATION ─────────────────────────\n\n';
+    txt += 'Q5 — Ordre des 4 missions :\n';
+    const missionsLabels = { attention:'Attirer l\'attention', enjeux:'Comprendre les enjeux', interet:'Créer de l\'intérêt', rdv:'Proposer un RDV' };
+    Object.keys(ORDER_CORRECT).forEach(m => {
+      const chosen = orderSelected[m] || '(non rempli)';
+      const ok = orderSelected[m] && orderSelected[m] === ORDER_CORRECT[m];
+      txt += '  ' + missionsLabels[m] + ' : Position ' + chosen + (orderSelected[m] ? ('  →  ' + (ok ? '✓ Correct' : '✗ Incorrect (bonne position : ' + ORDER_CORRECT[m] + ')')) : '') + '\n';
+    });
+
+    txt += '\nQ6 — Phrase de proposition de RDV :\n';
+    txt += (document.getElementById('ans-q6').value.trim() || '(non rempli)') + '\n\n';
+
+    txt += '═══════════════════════════════════════════════════\n';
+    txt += 'Envoie ce fichier à Miora une fois complété.\n';
+
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = 'Daylindo_Fiche6_reponses.txt';
+    a.click(); URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
