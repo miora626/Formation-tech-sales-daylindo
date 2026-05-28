@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fiche 3 — La solution Daylindo (vue globale) | Daylindo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Karla:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0d1f3c;
+      --navy2:  #162d54;
+      --orange: #f06423;
+      --orng2:  #ff813f;
+      --cream:  #faf7f2;
+      --muted:  #8a95a8;
+      --border: #d8dde7;
+      --ok:     #1a9e6f;
+      --ko:     #d94040;
+      --shadow: 0 4px 28px rgba(13,31,60,.10);
+      --b1: #3a7ec9;
+      --b2: #c0792c;
+      --b3: #5b4fcf;
+      --b4: #1a9e6f;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Karla', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; }
+
+    /* HERO */
+    .hero { background: var(--navy); color: #fff; position: relative; overflow: hidden; }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 120% at 110% -10%, rgba(240,100,35,.35) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 80% at -10% 110%, rgba(22,45,84,.8) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; max-width: 900px; margin: 0 auto; padding: 52px 32px 44px; display: flex; flex-direction: column; gap: 12px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(240,100,35,.18); border: 1px solid rgba(240,100,35,.4); color: var(--orng2); font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; width: fit-content; }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orng2); }
+    .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(28px,5.5vw,50px); font-weight: 800; line-height: 1.05; }
+    .hero h1 span { color: var(--orng2); }
+    .hero-sub { font-size: 15px; color: rgba(255,255,255,.65); max-width: 560px; line-height: 1.6; }
+    .hero-meta { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 4px; }
+    .meta-pill { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,.55); }
+
+    /* BRIQUES LEGEND */
+    .briques-bar { max-width: 900px; margin: 24px auto 0; padding: 0 32px; }
+    .briques-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .brique-chip { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; background: #fff; box-shadow: var(--shadow); }
+    .brique-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* INSTRUCTIONS */
+    .instructions { max-width: 900px; margin: 16px auto 0; padding: 0 32px; }
+    .instr-box { background: #fff; border-left: 4px solid var(--orange); border-radius: 0 10px 10px 0; padding: 16px 20px; font-size: 14px; color: var(--navy); line-height: 1.65; box-shadow: var(--shadow); }
+    .instr-box strong { color: var(--orange); }
+
+    /* PROGRESS */
+    .progress-wrap { max-width: 900px; margin: 20px auto 0; padding: 0 32px; }
+    .progress-label { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--orange), var(--orng2)); border-radius: 99px; width: 0%; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+    /* MAIN */
+    main { max-width: 900px; margin: 28px auto 60px; padding: 0 32px; display: flex; flex-direction: column; gap: 24px; }
+    .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* CARD */
+    .card { background: #fff; border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; transition: box-shadow .25s; animation: fadeUp .4s ease both; }
+    .card:focus-within { box-shadow: 0 6px 36px rgba(240,100,35,.14), 0 0 0 2px rgba(240,100,35,.25); }
+    .card-header { padding: 22px 26px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 16px; }
+    .q-num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; background: var(--navy); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 700; display: grid; place-items: center; }
+    .q-num.diag { background: var(--b3); }
+    .q-num.mis  { background: var(--orange); }
+    .q-text { font-size: 15.5px; font-weight: 500; line-height: 1.55; padding-top: 4px; }
+    .q-text em { font-style: italic; color: var(--muted); font-size: 14px; }
+    .card-body { padding: 20px 26px 24px; }
+
+    /* OPTIONS */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt-label { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; border-radius: 10px; border: 2px solid var(--border); cursor: pointer; transition: border-color .2s, background .2s, transform .15s; user-select: none; }
+    .opt-label:hover { border-color: #b0bac9; background: #f7f9fc; transform: translateX(3px); }
+    .opt-label input[type="radio"] { display: none; }
+    .opt-marker { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--border); background: var(--cream); display: grid; place-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted); transition: all .2s; }
+    .opt-text { font-size: 14.5px; line-height: 1.55; padding-top: 3px; color: #3a4a62; }
+    .opt-label.selected { border-color: var(--orange); background: rgba(240,100,35,.05); }
+    .opt-label.selected .opt-marker { background: var(--orange); border-color: var(--orange); color: #fff; }
+    .opt-label.correct-ans { border-color: var(--ok); background: rgba(26,158,111,.07); }
+    .opt-label.correct-ans .opt-marker { background: var(--ok); border-color: var(--ok); color: #fff; }
+    .opt-label.wrong-ans { border-color: var(--ko); background: rgba(217,64,64,.06); }
+    .opt-label.wrong-ans .opt-marker { background: var(--ko); border-color: var(--ko); color: #fff; }
+    .feedback-msg { margin-top: 12px; font-size: 13.5px; font-weight: 500; display: none; align-items: flex-start; gap: 8px; padding: 12px 14px; border-radius: 8px; line-height: 1.55; }
+    .feedback-msg.show { display: flex; }
+    .feedback-msg.ok { background: rgba(26,158,111,.1); color: #136f4d; }
+    .feedback-msg.ko { background: rgba(217,64,64,.1); color: #a02828; }
+
+    /* DIAGNOSTIC GRID */
+    .diag-grid { display: flex; flex-direction: column; gap: 16px; }
+    .diag-row { border: 2px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color .2s; }
+    .diag-row:focus-within { border-color: var(--orange); }
+    .diag-header { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: #f4f6fb; border-bottom: 1px solid var(--border); }
+    .sit-tag { flex-shrink: 0; padding: 3px 10px; border-radius: 6px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: .05em; color: #fff; margin-top: 1px; }
+    .sit-tag.a { background: var(--b1); }
+    .sit-tag.b { background: var(--b3); }
+    .sit-tag.c { background: var(--ok); }
+    .sit-tag.d { background: var(--orange); }
+    .diag-quote { font-size: 14px; line-height: 1.6; color: var(--navy); font-style: italic; }
+    .diag-quote strong { font-style: normal; font-weight: 600; color: var(--navy); }
+    .diag-body { padding: 14px 16px; }
+    .diag-hint { font-size: 13px; color: var(--muted); margin-bottom: 8px; font-style: italic; }
+
+    /* BRIQUE SELECTOR */
+    .brique-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .brique-btn {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 14px; border-radius: 8px; border: 2px solid var(--border);
+      background: var(--cream); cursor: pointer; transition: all .18s;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700;
+      color: var(--muted); user-select: none;
+    }
+    .brique-btn:hover { border-color: #aab; background: #f0f2f8; }
+    .brique-btn .bd { width: 9px; height: 9px; border-radius: 50%; }
+    .brique-btn.b1 .bd { background: var(--b1); } .brique-btn.b1.sel { border-color: var(--b1); background: rgba(58,126,201,.1); color: var(--b1); }
+    .brique-btn.b2 .bd { background: var(--b2); } .brique-btn.b2.sel { border-color: var(--b2); background: rgba(192,121,44,.1); color: var(--b2); }
+    .brique-btn.b3 .bd { background: var(--b3); } .brique-btn.b3.sel { border-color: var(--b3); background: rgba(91,79,207,.1); color: var(--b3); }
+    .brique-btn.b4 .bd { background: var(--b4); } .brique-btn.b4.sel { border-color: var(--b4); background: rgba(26,158,111,.1); color: var(--b4); }
+    .brique-btn.b5 .bd { background: var(--ko); } .brique-btn.b5.sel { border-color: var(--ko); background: rgba(217,64,64,.1); color: var(--ko); }
+
+    /* TEXTAREA */
+    textarea { width: 100%; min-height: 80px; resize: vertical; border: 2px solid var(--border); border-radius: 10px; padding: 12px 14px; font-family: 'Karla', sans-serif; font-size: 15px; color: var(--navy); background: #fafbfc; transition: border-color .2s, background .2s; outline: none; line-height: 1.6; }
+    textarea:focus { border-color: var(--orange); background: #fff; }
+    textarea::placeholder { color: #b8c0cf; font-style: italic; }
+    .char-counter { text-align: right; font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .char-counter.warn { color: var(--ko); }
+
+    /* MISE EN SITUATION BLOCK */
+    .mis-scenario { background: #f4f6fb; border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; border-left: 4px solid var(--orange); }
+    .mis-scenario p { font-size: 14.5px; line-height: 1.65; color: var(--navy); }
+    .mis-scenario .label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--orange); margin-bottom: 6px; }
+    .open-hint { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; font-style: italic; }
+
+    /* SUBMIT */
+    .submit-section { background: #fff; border-radius: 14px; box-shadow: var(--shadow); padding: 28px 26px; display: flex; flex-direction: column; gap: 18px; }
+    .submit-section h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 10px; font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .03em; cursor: pointer; border: none; transition: transform .15s, box-shadow .15s, filter .15s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 18px rgba(240,100,35,.35); }
+    .btn-primary:hover { filter: brightness(1.07); box-shadow: 0 6px 24px rgba(240,100,35,.45); }
+    .btn-secondary { background: var(--navy); color: #fff; box-shadow: 0 4px 18px rgba(13,31,60,.2); }
+    .btn-secondary:hover { filter: brightness(1.15); }
+    .btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--border); }
+    .btn-outline:hover { border-color: var(--navy); background: var(--cream); }
+
+    /* SCORE */
+    #score-panel { display: none; background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%); color: #fff; border-radius: 14px; padding: 28px 26px; position: relative; overflow: hidden; }
+    #score-panel::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 90% at 100% 0%, rgba(240,100,35,.25) 0%, transparent 60%); }
+    #score-panel.show { display: block; }
+    .score-inner { position: relative; }
+    .score-title { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 8px; }
+    .score-big { font-family: 'Barlow Condensed', sans-serif; font-size: 64px; font-weight: 800; line-height: 1; color: var(--orng2); }
+    .score-desc { font-size: 16px; color: rgba(255,255,255,.8); margin-top: 8px; line-height: 1.5; }
+
+    footer { text-align: center; padding: 24px 32px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); }
+    footer strong { color: var(--navy); }
+
+    @media (max-width: 600px) {
+      .hero-inner { padding: 36px 20px 32px; }
+      .instructions, .progress-wrap, .briques-bar, main { padding: 0 16px; }
+      .card-header, .card-body { padding: 18px 18px; }
+      .submit-section { padding: 22px 18px; }
+      .brique-opts { gap: 6px; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .card:nth-child(1){animation-delay:.04s}.card:nth-child(2){animation-delay:.08s}
+    .card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.16s}
+    .card:nth-child(5){animation-delay:.20s}.card:nth-child(6){animation-delay:.24s}
+    .card:nth-child(7){animation-delay:.28s}.card:nth-child(8){animation-delay:.32s}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge"><span class="badge-dot"></span>Formation BDR — Daylindo</span>
+    <h1>Fiche <span>3</span> — La solution Daylindo<br><span style="font-size:.75em;opacity:.8;">Vue globale : les 5 briques</span></h1>
+    <p class="hero-sub">Exercices pratiques. Associe chaque besoin à la bonne brique, réponds aux QCM et traite la mise en situation.</p>
+    <div class="hero-meta">
+      <span class="meta-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        ~15 minutes
+      </span>
+      <span class="meta-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        4 QCM · 4 Diagnostics · 1 Mise en situation
+      </span>
+    </div>
+  </div>
+</header>
+
+<!-- BRIQUES LEGEND -->
+<div class="briques-bar">
+  <div class="briques-grid">
+    <div class="brique-chip"><span class="brique-dot" style="background:var(--b1)"></span>Brique 1 — Ingénierie</div>
+    <div class="brique-chip"><span class="brique-dot" style="background:var(--b2)"></span>Brique 2 — Formateurs terrain</div>
+    <div class="brique-chip"><span class="brique-dot" style="background:var(--b3)"></span>Brique 3 — Plateforme digitale</div>
+    <div class="brique-chip"><span class="brique-dot" style="background:var(--b4)"></span>Brique 4 — Financement</div>
+    <div class="brique-chip"><span class="brique-dot" style="background:var(--ko)"></span>Brique 5 — Suivi & amélioration</div>
+  </div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="instructions">
+  <div class="instr-box" style="margin-top:16px;">
+    <strong>Instructions :</strong> Pour les QCM, clique sur la bonne réponse. Pour le diagnostic, sélectionne la brique correspondante.
+    Pour la mise en situation, rédige 2–3 phrases en citant au moins 2 briques. Clique sur <strong>« Vérifier »</strong> puis <strong>« Télécharger »</strong> pour envoyer à Miora.
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-label">Progression — <span id="prog-text">0 / 9</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<main>
+
+  <!-- PARTIE 1 — QCM -->
+  <div class="section-label">Partie 1 — QCM : Les 5 briques</div>
+
+  <!-- Q1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q1</div>
+      <p class="q-text">Selon le texte, comment doit-on définir la solution Daylindo&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q1">
+        <label class="opt-label" data-q="q1" data-val="A"><input type="radio" name="q1" value="A"/><span class="opt-marker">A</span><span class="opt-text">C'est uniquement une nouvelle application mobile de formation.</span></label>
+        <label class="opt-label" data-q="q1" data-val="B"><input type="radio" name="q1" value="B"/><span class="opt-marker">B</span><span class="opt-text">C'est un système complet composé de plusieurs éléments qui travaillent ensemble.</span></label>
+        <label class="opt-label" data-q="q1" data-val="C"><input type="radio" name="q1" value="C"/><span class="opt-marker">C</span><span class="opt-text">C'est uniquement un organisme de formation classique.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q1"></div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q2</div>
+      <p class="q-text">À quoi sert l'Ingénierie — la <strong>Brique 1</strong>&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q2">
+        <label class="opt-label" data-q="q2" data-val="A"><input type="radio" name="q2" value="A"/><span class="opt-marker">A</span><span class="opt-text">À structurer les étapes d'apprentissage, les méthodes et l'organisation sur le terrain.</span></label>
+        <label class="opt-label" data-q="q2" data-val="B"><input type="radio" name="q2" value="B"/><span class="opt-marker">B</span><span class="opt-text">À réparer les problèmes techniques de l'application mobile.</span></label>
+        <label class="opt-label" data-q="q2" data-val="C"><input type="radio" name="q2" value="C"/><span class="opt-marker">C</span><span class="opt-text">À recruter de nouveaux experts métier.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q2"></div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q3</div>
+      <p class="q-text">Pourquoi Daylindo propose-t-il l'outillage et la formation des formateurs terrain — <strong>Brique 2</strong>&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q3">
+        <label class="opt-label" data-q="q3" data-val="A"><input type="radio" name="q3" value="A"/><span class="opt-marker">A</span><span class="opt-text">Pour que les managers obtiennent une promotion.</span></label>
+        <label class="opt-label" data-q="q3" data-val="B"><input type="radio" name="q3" value="B"/><span class="opt-marker">B</span><span class="opt-text">Parce que les experts métier doivent savoir transmettre avec méthode pour que l'accompagnement soit structuré et efficace.</span></label>
+        <label class="opt-label" data-q="q3" data-val="C"><input type="radio" name="q3" value="C"/><span class="opt-marker">C</span><span class="opt-text">Pour qu'ils apprennent à utiliser des logiciels de comptabilité.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q3"></div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num">Q4</div>
+      <p class="q-text">Quel est le but de la <strong>Brique 4</strong> — Optimisation du financement&nbsp;?</p>
+    </div>
+    <div class="card-body">
+      <div class="options" id="opts-q4">
+        <label class="opt-label" data-q="q4" data-val="A"><input type="radio" name="q4" value="A"/><span class="opt-marker">A</span><span class="opt-text">Vendre nos services plus cher.</span></label>
+        <label class="opt-label" data-q="q4" data-val="B"><input type="radio" name="q4" value="B"/><span class="opt-marker">B</span><span class="opt-text">Préparer les dossiers et suivre les preuves pour aider l'entreprise à récupérer une partie des coûts.</span></label>
+        <label class="opt-label" data-q="q4" data-val="C"><input type="radio" name="q4" value="C"/><span class="opt-marker">C</span><span class="opt-text">Financer les repas des collaborateurs en formation.</span></label>
+      </div>
+      <div class="feedback-msg" id="fb-q4"></div>
+    </div>
+  </div>
+
+  <!-- PARTIE 2 — DIAGNOSTIC -->
+  <div class="section-label" style="margin-top:8px;">Partie 2 — Le diagnostic : associe le besoin à la brique</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num diag">D</div>
+      <p class="q-text">Pour chaque situation ci-dessous, sélectionne la brique Daylindo la plus adaptée, puis justifie en quelques mots.</p>
+    </div>
+    <div class="card-body">
+      <div class="diag-grid">
+
+        <!-- Sit A -->
+        <div class="diag-row">
+          <div class="diag-header">
+            <span class="sit-tag a">Sit. A</span>
+            <p class="diag-quote">«&nbsp;Nos experts connaissent parfaitement leur travail, mais quand il s'agit de l'expliquer aux jeunes recrues, ils n'ont pas la bonne méthode.&nbsp;»</p>
+          </div>
+          <div class="diag-body">
+            <p class="diag-hint">Quelle brique répond à ce besoin ?</p>
+            <div class="brique-opts" id="bopts-sita">
+              <button type="button" class="brique-btn b1" data-sit="sita" data-val="1" onclick="selectBrique(this)"><span class="bd"></span>Brique 1</button>
+              <button type="button" class="brique-btn b2" data-sit="sita" data-val="2" onclick="selectBrique(this)"><span class="bd"></span>Brique 2</button>
+              <button type="button" class="brique-btn b3" data-sit="sita" data-val="3" onclick="selectBrique(this)"><span class="bd"></span>Brique 3</button>
+              <button type="button" class="brique-btn b4" data-sit="sita" data-val="4" onclick="selectBrique(this)"><span class="bd"></span>Brique 4</button>
+              <button type="button" class="brique-btn b5" data-sit="sita" data-val="5" onclick="selectBrique(this)"><span class="bd"></span>Brique 5</button>
+            </div>
+            <textarea id="ans-sita" placeholder="Explique en quelques mots pourquoi cette brique..." maxlength="250" rows="2" oninput="updateChar('sita',250); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sita">0 / 250</div>
+            <div class="feedback-msg" id="fb-sita"></div>
+          </div>
+        </div>
+
+        <!-- Sit B -->
+        <div class="diag-row">
+          <div class="diag-header">
+            <span class="sit-tag b">Sit. B</span>
+            <p class="diag-quote">«&nbsp;On fait beaucoup d'actions sur le terrain, mais je n'ai aucune visibilité. J'ai besoin de pouvoir suivre les progrès et tracer ce qui se passe.&nbsp;»</p>
+          </div>
+          <div class="diag-body">
+            <p class="diag-hint">Quelle brique répond à ce besoin ?</p>
+            <div class="brique-opts" id="bopts-sitb">
+              <button type="button" class="brique-btn b1" data-sit="sitb" data-val="1" onclick="selectBrique(this)"><span class="bd"></span>Brique 1</button>
+              <button type="button" class="brique-btn b2" data-sit="sitb" data-val="2" onclick="selectBrique(this)"><span class="bd"></span>Brique 2</button>
+              <button type="button" class="brique-btn b3" data-sit="sitb" data-val="3" onclick="selectBrique(this)"><span class="bd"></span>Brique 3</button>
+              <button type="button" class="brique-btn b4" data-sit="sitb" data-val="4" onclick="selectBrique(this)"><span class="bd"></span>Brique 4</button>
+              <button type="button" class="brique-btn b5" data-sit="sitb" data-val="5" onclick="selectBrique(this)"><span class="bd"></span>Brique 5</button>
+            </div>
+            <textarea id="ans-sitb" placeholder="Explique en quelques mots pourquoi cette brique..." maxlength="250" rows="2" oninput="updateChar('sitb',250); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sitb">0 / 250</div>
+            <div class="feedback-msg" id="fb-sitb"></div>
+          </div>
+        </div>
+
+        <!-- Sit C -->
+        <div class="diag-row">
+          <div class="diag-header">
+            <span class="sit-tag c">Sit. C</span>
+            <p class="diag-quote">«&nbsp;Nous formons déjà beaucoup en interne, mais nous n'avons jamais le temps de monter les dossiers pour obtenir les aides, ça nous coûte trop cher.&nbsp;»</p>
+          </div>
+          <div class="diag-body">
+            <p class="diag-hint">Quelle brique répond à ce besoin ?</p>
+            <div class="brique-opts" id="bopts-sitc">
+              <button type="button" class="brique-btn b1" data-sit="sitc" data-val="1" onclick="selectBrique(this)"><span class="bd"></span>Brique 1</button>
+              <button type="button" class="brique-btn b2" data-sit="sitc" data-val="2" onclick="selectBrique(this)"><span class="bd"></span>Brique 2</button>
+              <button type="button" class="brique-btn b3" data-sit="sitc" data-val="3" onclick="selectBrique(this)"><span class="bd"></span>Brique 3</button>
+              <button type="button" class="brique-btn b4" data-sit="sitc" data-val="4" onclick="selectBrique(this)"><span class="bd"></span>Brique 4</button>
+              <button type="button" class="brique-btn b5" data-sit="sitc" data-val="5" onclick="selectBrique(this)"><span class="bd"></span>Brique 5</button>
+            </div>
+            <textarea id="ans-sitc" placeholder="Explique en quelques mots pourquoi cette brique..." maxlength="250" rows="2" oninput="updateChar('sitc',250); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sitc">0 / 250</div>
+            <div class="feedback-msg" id="fb-sitc"></div>
+          </div>
+        </div>
+
+        <!-- Sit D -->
+        <div class="diag-row">
+          <div class="diag-header">
+            <span class="sit-tag d">Sit. D</span>
+            <p class="diag-quote">«&nbsp;Avant même de lancer la formation, nous avons besoin d'organiser les choses, d'avoir un parcours clair avec des étapes d'apprentissage définies.&nbsp;»</p>
+          </div>
+          <div class="diag-body">
+            <p class="diag-hint">Quelle brique répond à ce besoin ?</p>
+            <div class="brique-opts" id="bopts-sitd">
+              <button type="button" class="brique-btn b1" data-sit="sitd" data-val="1" onclick="selectBrique(this)"><span class="bd"></span>Brique 1</button>
+              <button type="button" class="brique-btn b2" data-sit="sitd" data-val="2" onclick="selectBrique(this)"><span class="bd"></span>Brique 2</button>
+              <button type="button" class="brique-btn b3" data-sit="sitd" data-val="3" onclick="selectBrique(this)"><span class="bd"></span>Brique 3</button>
+              <button type="button" class="brique-btn b4" data-sit="sitd" data-val="4" onclick="selectBrique(this)"><span class="bd"></span>Brique 4</button>
+              <button type="button" class="brique-btn b5" data-sit="sitd" data-val="5" onclick="selectBrique(this)"><span class="bd"></span>Brique 5</button>
+            </div>
+            <textarea id="ans-sitd" placeholder="Explique en quelques mots pourquoi cette brique..." maxlength="250" rows="2" oninput="updateChar('sitd',250); updateProgress();"></textarea>
+            <div class="char-counter" id="cc-sitd">0 / 250</div>
+            <div class="feedback-msg" id="fb-sitd"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MISE EN SITUATION -->
+  <div class="section-label" style="margin-top:8px;">Mise en situation — Un DRH te parle</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="q-num mis">M</div>
+      <p class="q-text">Identifie plusieurs briques impliquées et explique comment Daylindo répond à chaque besoin.</p>
+    </div>
+    <div class="card-body">
+      <div class="mis-scenario">
+        <div class="label">Situation</div>
+        <p>Un DRH te dit : <strong>«&nbsp;Nous faisons déjà de la formation interne, mais c'est difficile à suivre, et ça coûte cher.&nbsp;»</strong></p>
+      </div>
+      <p class="open-hint">Cite au moins 2 briques et explique en 2–3 phrases comment Daylindo répond à chaque besoin exprimé.</p>
+      <textarea id="ans-mis" placeholder="Ex. : Ce DRH a deux besoins principaux. D'abord la visibilité — la Brique 3 (plateforme) lui permet de suivre et tracer toutes les actions terrain. Ensuite les coûts — la Brique 4 (financement) l'aide à récupérer une partie via OPCO/AFEST..." maxlength="700" rows="6" oninput="updateChar('mis',700); updateProgress();"></textarea>
+      <div class="char-counter" id="cc-mis">0 / 700</div>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="score-panel">
+    <div class="score-inner">
+      <div class="score-title">Score QCM + Diagnostic</div>
+      <div class="score-big" id="score-val">—</div>
+      <div class="score-desc" id="score-desc"></div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <h3>Prêt·e à envoyer tes réponses&nbsp;?</h3>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;">Vérifie tes QCM et diagnostics, puis télécharge le fichier et envoie-le à Miora.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="checkAll()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Vérifier mes réponses
+      </button>
+      <button class="btn btn-secondary" onclick="downloadAnswers()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger mes réponses
+      </button>
+      <button class="btn btn-outline" onclick="window.print()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimer
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>Daylindo</strong> — Formation BDR &nbsp;·&nbsp; Fiche 3 — La solution Daylindo (vue globale) &nbsp;·&nbsp; Exercice interne
+</footer>
+
+<script>
+  // QCM correct answers
+  const QCM_CORRECT = { q1:'B', q2:'A', q3:'B', q4:'B' };
+  const QCM_FEEDBACK = {
+    q1: {
+      ok: '✓ Exact ! Daylindo n\'est pas un outil seul — c\'est une démarche complète, soutenue par une plateforme et plusieurs briques complémentaires.',
+      ko: '✗ Incorrect. Daylindo n\'est ni une simple appli ni un organisme classique — c\'est un système complet de plusieurs briques qui travaillent ensemble.'
+    },
+    q2: {
+      ok: '✓ Bien ! La Brique 1 structure le référentiel : étapes, méthodes, organisation terrain — avant toute transmission.',
+      ko: '✗ Pas tout à fait. La Brique 1 est la méthode, l\'ingénierie pédagogique — elle structure le parcours avant de former.'
+    },
+    q3: {
+      ok: '✓ Correct ! Les experts métier doivent apprendre à transmettre avec méthode — l\'expertise seule ne suffit pas.',
+      ko: '✗ Incorrect. La Brique 2 outille ET forme les formateurs terrain pour qu\'ils transmettent efficacement, pas juste d\'expérience.'
+    },
+    q4: {
+      ok: '✓ Bonne réponse ! La Brique 4 prépare les dossiers OPCO/AFEST et suit les preuves pour récupérer une partie des coûts.',
+      ko: '✗ Incorrect. L\'objectif est de récupérer les aides OPCO/AFEST — Daylindo prépare les dossiers et suit les preuves pour l\'entreprise.'
+    }
+  };
+
+  // Diagnostic correct briques
+  const DIAG_CORRECT = { sita:'2', sitb:'3', sitc:'4', sitd:'1' };
+  const DIAG_FEEDBACK = {
+    sita: {
+      ok: '✓ Brique 2 — L\'outillage et la formation des formateurs terrain. Les experts doivent être outillés ET formés pour transmettre avec méthode.',
+      ko: '✗ La bonne réponse est la Brique 2. Les experts savent faire mais pas forcément transmettre — ils ont besoin d\'être formés à la pédagogie terrain.'
+    },
+    sitb: {
+      ok: '✓ Brique 3 — La plateforme digitale. Elle trace, suit et organise tout ce qui se passe sur le terrain pour donner la visibilité manquante.',
+      ko: '✗ La bonne réponse est la Brique 3. La plateforme est faite pour donner de la visibilité, suivre les progrès et tracer les actions terrain.'
+    },
+    sitc: {
+      ok: '✓ Brique 4 — L\'optimisation du financement. Daylindo prépare les dossiers et suit les preuves pour récupérer les aides OPCO/AFEST.',
+      ko: '✗ La bonne réponse est la Brique 4. La problématique est le coût de la formation non récupéré — c\'est exactement ce que résout la Brique 4.'
+    },
+    sitd: {
+      ok: '✓ Brique 1 — L\'ingénierie (la méthode). On structure d\'abord le référentiel : étapes, méthodes, organisation terrain.',
+      ko: '✗ La bonne réponse est la Brique 1. Avant de former, il faut structurer — c\'est le rôle de la Brique 1 : ingénierie pédagogique.'
+    }
+  };
+
+  let qcmAnswered = {};
+  let briquesSelected = {};
+
+  // QCM click
+  document.querySelectorAll('.opt-label').forEach(label => {
+    label.addEventListener('click', function() {
+      const q = this.dataset.q;
+      const val = this.dataset.val;
+      this.querySelector('input').checked = true;
+      document.querySelectorAll(`.opt-label[data-q="${q}"]`).forEach(l => l.classList.remove('selected'));
+      this.classList.add('selected');
+      qcmAnswered[q] = val;
+      updateProgress();
+    });
+  });
+
+  // Brique selector
+  function selectBrique(btn) {
+    const sit = btn.dataset.sit;
+    const val = btn.dataset.val;
+    document.querySelectorAll(`[data-sit="${sit}"]`).forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    briquesSelected[sit] = val;
+    updateProgress();
+  }
+
+  function checkAll() {
+    let score = 0; let total = 0;
+
+    // QCM
+    Object.keys(QCM_CORRECT).forEach(q => {
+      total++;
+      const chosen = qcmAnswered[q];
+      const fb = document.getElementById('fb-' + q);
+      const opts = document.querySelectorAll(`.opt-label[data-q="${q}"]`);
+      opts.forEach(l => l.classList.remove('correct-ans','wrong-ans'));
+      if (!chosen) {
+        fb.className = 'feedback-msg show ko';
+        fb.textContent = '⚠ Tu n\'as pas encore sélectionné de réponse.';
+        return;
+      }
+      opts.forEach(l => {
+        if (l.dataset.val === QCM_CORRECT[q]) l.classList.add('correct-ans');
+        else if (l.dataset.val === chosen && chosen !== QCM_CORRECT[q]) l.classList.add('wrong-ans');
+      });
+      if (chosen === QCM_CORRECT[q]) { score++; fb.className='feedback-msg show ok'; fb.textContent=QCM_FEEDBACK[q].ok; }
+      else { fb.className='feedback-msg show ko'; fb.textContent=QCM_FEEDBACK[q].ko; }
+    });
+
+    // Diagnostics
+    Object.keys(DIAG_CORRECT).forEach(sit => {
+      total++;
+      const chosen = briquesSelected[sit];
+      const fb = document.getElementById('fb-' + sit);
+      if (!chosen) {
+        fb.className = 'feedback-msg show ko';
+        fb.textContent = '⚠ Sélectionne une brique pour cette situation.';
+        return;
+      }
+      if (chosen === DIAG_CORRECT[sit]) { score++; fb.className='feedback-msg show ok'; fb.textContent=DIAG_FEEDBACK[sit].ok; }
+      else { fb.className='feedback-msg show ko'; fb.textContent=DIAG_FEEDBACK[sit].ko; }
+    });
+
+    const sp = document.getElementById('score-panel');
+    sp.classList.add('show');
+    document.getElementById('score-val').textContent = score + ' / ' + total;
+    const pct = score / total;
+    let desc = '';
+    if (pct < 0.5) desc = 'Relis bien la fiche des 5 briques et réessaie — certains concepts sont à retravailler.';
+    else if (pct < 0.75) desc = 'Bon début ! Quelques briques à mieux distinguer — relis les descriptions.';
+    else if (pct < 1) desc = 'Très bien ! Tu maîtrises l\'essentiel. Encore un peu de précision et tu seras au top.';
+    else desc = 'Parfait ! Tu maîtrises les 5 briques Daylindo et sais les associer aux besoins clients. 🎉';
+    document.getElementById('score-desc').textContent = desc;
+    sp.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  function updateChar(id, max) {
+    const ta = document.getElementById('ans-' + id);
+    const cc = document.getElementById('cc-' + id);
+    const len = ta.value.length;
+    cc.textContent = len + ' / ' + max;
+    cc.classList.toggle('warn', len > max * 0.9);
+  }
+
+  function updateProgress() {
+    let done = 0;
+    ['q1','q2','q3','q4'].forEach(q => { if (qcmAnswered[q]) done++; });
+    ['sita','sitb','sitc','sitd'].forEach(s => { if (briquesSelected[s]) done++; });
+    if (document.getElementById('ans-mis').value.trim().length > 20) done++;
+    const capped = Math.min(done, 9);
+    document.getElementById('prog-text').textContent = capped + ' / 9';
+    document.getElementById('prog-fill').style.width = (capped / 9 * 100) + '%';
+  }
+
+  const BRIQUE_NAMES = {
+    '1': 'Brique 1 — Ingénierie',
+    '2': 'Brique 2 — Formateurs terrain',
+    '3': 'Brique 3 — Plateforme digitale',
+    '4': 'Brique 4 — Financement',
+    '5': 'Brique 5 — Suivi & amélioration'
+  };
+
+  function downloadAnswers() {
+    const ts = new Date().toLocaleString('fr-FR');
+    let txt = '═══════════════════════════════════════════════════\n';
+    txt += '  DAYLINDO — Formation BDR\n';
+    txt += '  FICHE 3 — La solution Daylindo (vue globale)\n';
+    txt += '  Téléchargé le : ' + ts + '\n';
+    txt += '═══════════════════════════════════════════════════\n\n';
+
+    txt += '── PARTIE 1 : QCM ──────────────────────────────────\n\n';
+    const qcmLabels = {
+      q1: 'Q1 — Comment définir la solution Daylindo ?',
+      q2: 'Q2 — À quoi sert la Brique 1 (Ingénierie) ?',
+      q3: 'Q3 — Pourquoi former les formateurs terrain (Brique 2) ?',
+      q4: 'Q4 — But de la Brique 4 (Financement) ?'
+    };
+    Object.keys(QCM_CORRECT).forEach(q => {
+      txt += qcmLabels[q] + '\n';
+      const rep = qcmAnswered[q] || '(non répondu)';
+      txt += 'Réponse : ' + rep;
+      if (qcmAnswered[q]) txt += '  →  ' + (qcmAnswered[q] === QCM_CORRECT[q] ? '✓ Correct' : '✗ Incorrect (bonne réponse : ' + QCM_CORRECT[q] + ')');
+      txt += '\n\n';
+    });
+
+    txt += '── PARTIE 2 : DIAGNOSTIC ───────────────────────────\n\n';
+    const sitLabels = {
+      sita: 'Sit.A — Experts qui ne savent pas transmettre',
+      sitb: 'Sit.B — Aucune visibilité sur les actions terrain',
+      sitc: 'Sit.C — Coûts de formation non récupérés',
+      sitd: 'Sit.D — Besoin de structurer le parcours d\'abord'
+    };
+    Object.keys(DIAG_CORRECT).forEach(sit => {
+      txt += sitLabels[sit] + '\n';
+      const brep = briquesSelected[sit] ? BRIQUE_NAMES[briquesSelected[sit]] : '(non sélectionné)';
+      txt += 'Brique choisie : ' + brep;
+      if (briquesSelected[sit]) txt += '  →  ' + (briquesSelected[sit] === DIAG_CORRECT[sit] ? '✓ Correct' : '✗ Incorrect (bonne réponse : ' + BRIQUE_NAMES[DIAG_CORRECT[sit]] + ')');
+      txt += '\n';
+      const justif = document.getElementById('ans-' + sit).value.trim();
+      txt += 'Justification : ' + (justif || '(non rempli)') + '\n\n';
+    });
+
+    txt += '── MISE EN SITUATION ───────────────────────────────\n\n';
+    txt += 'DRH : "Nous faisons de la formation interne, difficile à suivre et ça coûte cher."\n';
+    txt += 'Ta réponse :\n' + (document.getElementById('ans-mis').value.trim() || '(non rempli)') + '\n\n';
+
+    txt += '═══════════════════════════════════════════════════\n';
+    txt += 'Envoie ce fichier à Miora une fois complété.\n';
+
+    const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url;
+    a.download = 'Daylindo_Fiche3_reponses.txt';
+    a.click(); URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
